@@ -16,7 +16,7 @@ test_with_special_characters (test.TestBibTeXGrammar.test_with_special_character
 Test parsing an entry with special LaTeX characters and commands. ... ok
 
 ----------------------------------------------------------------------
-Ran 7 tests in 0.193s
+Ran 7 tests in 0.178s
 
 OK
 Provided assignment tests: 7/7 passed
@@ -61,13 +61,14 @@ test_type_proceedings (tests.test_edge_cases.ValidInputTests.test_type_proceedin
 test_type_techreport (tests.test_edge_cases.ValidInputTests.test_type_techreport) ... ok
 test_type_unpublished (tests.test_edge_cases.ValidInputTests.test_type_unpublished) ... ok
 test_unicode (tests.test_edge_cases.ValidInputTests.test_unicode) ... ok
+test_unicode_spacing (tests.test_edge_cases.ValidInputTests.test_unicode_spacing) ... ok
 test_whitespace (tests.test_edge_cases.ValidInputTests.test_whitespace) ... ok
 
 ----------------------------------------------------------------------
-Ran 40 tests in 0.016s
+Ran 41 tests in 0.015s
 
 OK
-Additional valid inputs: 40/40 passed
+Additional valid inputs: 41/41 passed
 
 Invalid inputs rejected
 test_bare_phrase (tests.test_edge_cases.InvalidInputTests.test_bare_phrase) ... ok
@@ -96,7 +97,7 @@ test_unmatched_nested_brace (tests.test_edge_cases.InvalidInputTests.test_unmatc
 test_unmatched_quote_group (tests.test_edge_cases.InvalidInputTests.test_unmatched_quote_group) ... ok
 
 ----------------------------------------------------------------------
-Ran 24 tests in 0.021s
+Ran 24 tests in 0.015s
 
 OK
 Invalid inputs rejected: 24/24 passed
@@ -106,32 +107,43 @@ test_invalid_inputs (tests.test_syncode.SynCodeParserTests.test_invalid_inputs) 
 test_valid_inputs (tests.test_syncode.SynCodeParserTests.test_valid_inputs) ... ok
 
 ----------------------------------------------------------------------
-Ran 2 tests in 5.718s
+Ran 2 tests in 4.205s
 
 OK
 SynCode parser compatibility: 2/2 passed
 
 Reviewer demonstration
-127.0.0.1 - - [25/Oct/2026 17:15:52] "POST /api/run HTTP/1.1" 409 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "GET /api/bounds HTTP/1.1" 200 -
+test_boundary_report_matches_current_grammar (tests.test_review_demo.ReviewerDemoTests.test_boundary_report_matches_current_grammar) ... ok
+127.0.0.1 - - [25/Oct/2026 17:50:22] "GET /api/cases HTTP/1.1" 200 -
+test_case_catalog_exposes_all_fixtures_and_requirements (tests.test_review_demo.ReviewerDemoTests.test_case_catalog_exposes_all_fixtures_and_requirements) ... ok
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/run HTTP/1.1" 409 -
 test_concurrent_model_run_is_rejected (tests.test_review_demo.ReviewerDemoTests.test_concurrent_model_run_is_rejected) ... ok
-127.0.0.1 - - [25/Oct/2026 17:15:52] "POST /api/run HTTP/1.1" 403 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/run HTTP/1.1" 403 -
 test_cross_origin_generation_is_rejected (tests.test_review_demo.ReviewerDemoTests.test_cross_origin_generation_is_rejected) ... ok
-127.0.0.1 - - [25/Oct/2026 17:15:52] "GET /api/evidence HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "GET /api/evidence HTTP/1.1" 200 -
 test_evidence_is_revalidated (tests.test_review_demo.ReviewerDemoTests.test_evidence_is_revalidated) ... ok
 test_fence_extraction_does_not_repair_bibtex (tests.test_review_demo.ReviewerDemoTests.test_fence_extraction_does_not_repair_bibtex) ... ok
-127.0.0.1 - - [25/Oct/2026 17:15:52] "GET /../.venv/pyvenv.cfg HTTP/1.1" 404 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/run-group HTTP/1.1" 200 -
+test_invalid_group_is_actually_rejected (tests.test_review_demo.ReviewerDemoTests.test_invalid_group_is_actually_rejected) ... ok
+127.0.0.1 - - [25/Oct/2026 17:50:22] "GET /../.venv/pyvenv.cfg HTTP/1.1" 404 -
 test_no_arbitrary_file_access (tests.test_review_demo.ReviewerDemoTests.test_no_arbitrary_file_access) ... ok
-127.0.0.1 - - [25/Oct/2026 17:15:52] "POST /api/validate HTTP/1.1" 400 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/validate HTTP/1.1" 400 -
 test_non_text_request_is_rejected (tests.test_review_demo.ReviewerDemoTests.test_non_text_request_is_rejected) ... ok
-127.0.0.1 - - [25/Oct/2026 17:15:52] "POST /api/validate HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/run-case HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/run-case HTTP/1.1" 200 -
+test_original_stress_fixtures_run_without_truncating_or_recursing_preview (tests.test_review_demo.ReviewerDemoTests.test_original_stress_fixtures_run_without_truncating_or_recursing_preview) ... ok
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/run-case HTTP/1.1" 404 -
+test_unknown_case_cannot_supply_arbitrary_fixture (tests.test_review_demo.ReviewerDemoTests.test_unknown_case_cannot_supply_arbitrary_fixture) ... ok
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/validate HTTP/1.1" 200 -
 test_validation_endpoint_accepts_nested_groups (tests.test_review_demo.ReviewerDemoTests.test_validation_endpoint_accepts_nested_groups) ... ok
-127.0.0.1 - - [25/Oct/2026 17:15:52] "POST /api/validate HTTP/1.1" 200 -
+127.0.0.1 - - [25/Oct/2026 17:50:22] "POST /api/validate HTTP/1.1" 200 -
 test_validation_endpoint_rejects_incomplete_input (tests.test_review_demo.ReviewerDemoTests.test_validation_endpoint_rejects_incomplete_input) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 0.602s
+Ran 13 tests in 0.582s
 
 OK
-Reviewer demonstration: 8/8 passed
+Reviewer demonstration: 13/13 passed
 
 OVERALL: PASS

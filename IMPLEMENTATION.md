@@ -1,7 +1,7 @@
 # BibTeX assignment: implementation and demonstration
 
 For the expanded reviewer interface, fair comparison analysis, and current
-81-test suite, see [REVIEWER.md](REVIEWER.md). The historical runs below are
+87-test suite, see [REVIEWER.md](REVIEWER.md). The historical runs below are
 preserved as evidence of the original implementation and its limitations.
 
 The working copy is based on upstream commit

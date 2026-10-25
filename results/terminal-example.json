@@ -1,0 +1,1230 @@
+{
+  "schema_version": 2,
+  "created_at_utc": "2026-10-25T22:40:01.205676+00:00",
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "seed": 0,
+  "mode": "grammar_mask",
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "device": "cpu",
+    "dtype": "float32",
+    "threads": 4
+  },
+  "git_commit": null,
+  "do_sample": false,
+  "source_sha256": "7ab39f16114c7bc2a28becce18dea0266fdac04e4acfe2565d957ed0dcc928d5",
+  "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "grammar_sha256": "507344a4a78f9b3413cd6d9c426413b578f04ac2b5ca658f1219a2a894b1f8d3",
+  "versions": {
+    "lark": "1.2.2",
+    "syncode": "0.4.16",
+    "torch": "2.14.1",
+    "transformers": "4.53.2"
+  },
+  "max_new_tokens": 256,
+  "examples": [
+    {
+      "name": "article",
+      "source": "@article{smith2024,author={John Smith},title={A Study},year=2024}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "mixed fields",
+      "source": "@book{sutton,title=\"Reinforcement Learning\",author={Sutton and Barto}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "multiple entries",
+      "source": "@misc{a,title={One}} @techreport{b,title={Two}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "40 nested groups",
+      "source": "@article{deep,title={{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{Nested}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "malformed input",
+      "source": "@article{broken,title={Unfinished}",
+      "valid": false,
+      "expected_valid": false,
+      "passed": true,
+      "error": "Unexpected token Token('$END', '') at line 1, column 34.\nExpected one of: \n\t* HASH\n\t* RBRACE\n\t* COMMA\n\t* WS\n"
+    }
+  ],
+  "generations": [
+    {
+      "prompt": "Generate one BibTeX book entry for a fictional book titled Grammar Lab by Alex Rivera, published in 2025.",
+      "mode": "unconstrained",
+      "output": "```bibtex\n@book{Rivera2025,\n    author = {Alex Rivera},\n    title = {{Grammar Lab}},\n    year = {2025}\n}\n```",
+      "valid": false,
+      "error": "Unexpected token Token('SYMBOL', '```') at line 1, column 1.\nExpected one of: \n\t* AT\n\t* WS\n",
+      "new_tokens": 41,
+      "elapsed_seconds": 2.867,
+      "rendered_prompt": "<|im_start|>system\nReturn only one complete BibTeX citation. No explanation or Markdown. Keep fields short.<|im_end|>\n<|im_start|>user\nGenerate one BibTeX book entry for a fictional book titled Grammar Lab by Alex Rivera, published in 2025.<|im_end|>\n<|im_start|>assistant\n",
+      "token_trace": [
+        {
+          "step": 1,
+          "prefix": "",
+          "model_top_choices": [
+            {
+              "token_id": 73594,
+              "text": "```",
+              "score": 20.289623260498047,
+              "allowed": true
+            },
+            {
+              "token_id": 31,
+              "text": "@",
+              "score": 19.878950119018555,
+              "allowed": true
+            },
+            {
+              "token_id": 95456,
+              "text": "Certainly",
+              "score": 16.518234252929688,
+              "allowed": true
+            },
+            {
+              "token_id": 13874,
+              "text": "``",
+              "score": 16.347261428833008,
+              "allowed": true
+            },
+            {
+              "token_id": 33,
+              "text": "B",
+              "score": 15.126044273376465,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 73594,
+              "text": "```",
+              "score": 20.289623260498047
+            },
+            {
+              "token_id": 31,
+              "text": "@",
+              "score": 19.878950119018555
+            },
+            {
+              "token_id": 95456,
+              "text": "Certainly",
+              "score": 16.518234252929688
+            },
+            {
+              "token_id": 13874,
+              "text": "``",
+              "score": 16.347261428833008
+            },
+            {
+              "token_id": 33,
+              "text": "B",
+              "score": 15.126044273376465
+            }
+          ],
+          "selected_token_id": 73594,
+          "selected_token": "```"
+        },
+        {
+          "step": 2,
+          "prefix": "```",
+          "model_top_choices": [
+            {
+              "token_id": 65,
+              "text": "b",
+              "score": 26.038009643554688,
+              "allowed": true
+            },
+            {
+              "token_id": 57280,
+              "text": "bib",
+              "score": 22.297637939453125,
+              "allowed": true
+            },
+            {
+              "token_id": 64680,
+              "text": "latex",
+              "score": 19.401939392089844,
+              "allowed": true
+            },
+            {
+              "token_id": 8221,
+              "text": "bi",
+              "score": 17.636518478393555,
+              "allowed": true
+            },
+            {
+              "token_id": 33,
+              "text": "B",
+              "score": 17.163511276245117,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 65,
+              "text": "b",
+              "score": 26.038009643554688
+            },
+            {
+              "token_id": 57280,
+              "text": "bib",
+              "score": 22.297637939453125
+            },
+            {
+              "token_id": 64680,
+              "text": "latex",
+              "score": 19.401939392089844
+            },
+            {
+              "token_id": 8221,
+              "text": "bi",
+              "score": 17.636518478393555
+            },
+            {
+              "token_id": 33,
+              "text": "B",
+              "score": 17.163511276245117
+            }
+          ],
+          "selected_token_id": 65,
+          "selected_token": "b"
+        },
+        {
+          "step": 3,
+          "prefix": "```b",
+          "model_top_choices": [
+            {
+              "token_id": 20319,
+              "text": "ibt",
+              "score": 24.543716430664062,
+              "allowed": true
+            },
+            {
+              "token_id": 8629,
+              "text": "iber",
+              "score": 17.700700759887695,
+              "allowed": true
+            },
+            {
+              "token_id": 579,
+              "text": "ib",
+              "score": 17.044721603393555,
+              "allowed": true
+            },
+            {
+              "token_id": 68613,
+              "text": "ibli",
+              "score": 15.488743782043457,
+              "allowed": true
+            },
+            {
+              "token_id": 406,
+              "text": "nt",
+              "score": 14.530112266540527,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 20319,
+              "text": "ibt",
+              "score": 24.543716430664062
+            },
+            {
+              "token_id": 8629,
+              "text": "iber",
+              "score": 17.700700759887695
+            },
+            {
+              "token_id": 579,
+              "text": "ib",
+              "score": 17.044721603393555
+            },
+            {
+              "token_id": 68613,
+              "text": "ibli",
+              "score": 15.488743782043457
+            },
+            {
+              "token_id": 406,
+              "text": "nt",
+              "score": 14.530112266540527
+            }
+          ],
+          "selected_token_id": 20319,
+          "selected_token": "ibt"
+        },
+        {
+          "step": 4,
+          "prefix": "```bibt",
+          "model_top_choices": [
+            {
+              "token_id": 327,
+              "text": "ex",
+              "score": 28.064876556396484,
+              "allowed": true
+            },
+            {
+              "token_id": 3257,
+              "text": "EX",
+              "score": 18.336456298828125,
+              "allowed": true
+            },
+            {
+              "token_id": 840,
+              "text": "Ex",
+              "score": 17.905101776123047,
+              "allowed": true
+            },
+            {
+              "token_id": 505,
+              "text": " ex",
+              "score": 15.233580589294434,
+              "allowed": true
+            },
+            {
+              "token_id": 1374,
+              "text": " Ex",
+              "score": 14.719606399536133,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 327,
+              "text": "ex",
+              "score": 28.064876556396484
+            },
+            {
+              "token_id": 3257,
+              "text": "EX",
+              "score": 18.336456298828125
+            },
+            {
+              "token_id": 840,
+              "text": "Ex",
+              "score": 17.905101776123047
+            },
+            {
+              "token_id": 505,
+              "text": " ex",
+              "score": 15.233580589294434
+            },
+            {
+              "token_id": 1374,
+              "text": " Ex",
+              "score": 14.719606399536133
+            }
+          ],
+          "selected_token_id": 327,
+          "selected_token": "ex"
+        },
+        {
+          "step": 5,
+          "prefix": "```bibtex",
+          "model_top_choices": [
+            {
+              "token_id": 198,
+              "text": "\n",
+              "score": 22.503658294677734,
+              "allowed": true
+            },
+            {
+              "token_id": 319,
+              "text": "\r\n",
+              "score": 17.974931716918945,
+              "allowed": true
+            },
+            {
+              "token_id": 271,
+              "text": "\n\n",
+              "score": 16.347078323364258,
+              "allowed": true
+            },
+            {
+              "token_id": 151643,
+              "text": "<|endoftext|>",
+              "score": 14.809782028198242,
+              "allowed": true
+            },
+            {
+              "token_id": 921,
+              "text": "]\n",
+              "score": 13.983741760253906,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 198,
+              "text": "\n",
+              "score": 22.503658294677734
+            },
+            {
+              "token_id": 319,
+              "text": "\r\n",
+              "score": 17.974931716918945
+            },
+            {
+              "token_id": 271,
+              "text": "\n\n",
+              "score": 16.347078323364258
+            },
+            {
+              "token_id": 151643,
+              "text": "<|endoftext|>",
+              "score": 14.809782028198242
+            },
+            {
+              "token_id": 921,
+              "text": "]\n",
+              "score": 13.983741760253906
+            }
+          ],
+          "selected_token_id": 198,
+          "selected_token": "\n"
+        },
+        {
+          "step": 6,
+          "prefix": "```bibtex\n",
+          "model_top_choices": [
+            {
+              "token_id": 31,
+              "text": "@",
+              "score": 23.403112411499023,
+              "allowed": true
+            },
+            {
+              "token_id": 4,
+              "text": "%",
+              "score": 16.184999465942383,
+              "allowed": true
+            },
+            {
+              "token_id": 59,
+              "text": "\\",
+              "score": 15.04460334777832,
+              "allowed": true
+            },
+            {
+              "token_id": 43456,
+              "text": "\\b",
+              "score": 14.615129470825195,
+              "allowed": true
+            },
+            {
+              "token_id": 2769,
+              "text": "%%",
+              "score": 13.94618034362793,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 31,
+              "text": "@",
+              "score": 23.403112411499023
+            },
+            {
+              "token_id": 4,
+              "text": "%",
+              "score": 16.184999465942383
+            },
+            {
+              "token_id": 59,
+              "text": "\\",
+              "score": 15.04460334777832
+            },
+            {
+              "token_id": 43456,
+              "text": "\\b",
+              "score": 14.615129470825195
+            },
+            {
+              "token_id": 2769,
+              "text": "%%",
+              "score": 13.94618034362793
+            }
+          ],
+          "selected_token_id": 31,
+          "selected_token": "@"
+        },
+        {
+          "step": 7,
+          "prefix": "```bibtex\n@",
+          "model_top_choices": [
+            {
+              "token_id": 2190,
+              "text": "book",
+              "score": 21.814481735229492,
+              "allowed": true
+            },
+            {
+              "token_id": 7134,
+              "text": "Book",
+              "score": 16.799095153808594,
+              "allowed": true
+            },
+            {
+              "token_id": 258,
+              "text": "in",
+              "score": 16.56528091430664,
+              "allowed": true
+            },
+            {
+              "token_id": 36625,
+              "text": "BOOK",
+              "score": 15.517555236816406,
+              "allowed": true
+            },
+            {
+              "token_id": 759,
+              "text": "ph",
+              "score": 15.074756622314453,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 2190,
+              "text": "book",
+              "score": 21.814481735229492
+            },
+            {
+              "token_id": 7134,
+              "text": "Book",
+              "score": 16.799095153808594
+            },
+            {
+              "token_id": 258,
+              "text": "in",
+              "score": 16.56528091430664
+            },
+            {
+              "token_id": 36625,
+              "text": "BOOK",
+              "score": 15.517555236816406
+            },
+            {
+              "token_id": 759,
+              "text": "ph",
+              "score": 15.074756622314453
+            }
+          ],
+          "selected_token_id": 2190,
+          "selected_token": "book"
+        },
+        {
+          "step": 8,
+          "prefix": "```bibtex\n@book",
+          "model_top_choices": [
+            {
+              "token_id": 90,
+              "text": "{",
+              "score": 22.54501724243164,
+              "allowed": true
+            },
+            {
+              "token_id": 515,
+              "text": "{\n",
+              "score": 19.16442108154297,
+              "allowed": true
+            },
+            {
+              "token_id": 76025,
+              "text": "{T",
+              "score": 17.99911117553711,
+              "allowed": true
+            },
+            {
+              "token_id": 69094,
+              "text": "{k",
+              "score": 16.544551849365234,
+              "allowed": true
+            },
+            {
+              "token_id": 35702,
+              "text": "{\\",
+              "score": 16.484189987182617,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 90,
+              "text": "{",
+              "score": 22.54501724243164
+            },
+            {
+              "token_id": 515,
+              "text": "{\n",
+              "score": 19.16442108154297
+            },
+            {
+              "token_id": 76025,
+              "text": "{T",
+              "score": 17.99911117553711
+            },
+            {
+              "token_id": 69094,
+              "text": "{k",
+              "score": 16.544551849365234
+            },
+            {
+              "token_id": 35702,
+              "text": "{\\",
+              "score": 16.484189987182617
+            }
+          ],
+          "selected_token_id": 90,
+          "selected_token": "{"
+        }
+      ],
+      "generated_token_ids": [
+        73594,
+        65,
+        20319,
+        327,
+        198,
+        31,
+        2190,
+        90,
+        85699,
+        64,
+        17,
+        15,
+        17,
+        20,
+        345,
+        262,
+        3150,
+        284,
+        314,
+        27387,
+        63110,
+        1583,
+        262,
+        2265,
+        284,
+        5867,
+        97178,
+        11607,
+        22050,
+        262,
+        1042,
+        284,
+        314,
+        17,
+        15,
+        17,
+        20,
+        532,
+        532,
+        73594,
+        151645
+      ],
+      "trace_matches_output": true,
+      "termination": "model_end"
+    },
+    {
+      "prompt": "Generate one BibTeX book entry for a fictional book titled Grammar Lab by Alex Rivera, published in 2025.",
+      "mode": "constrained",
+      "output": "@book{rivera2025grammarlab,\n  author    = {Alex Rivera},\n  title     = {Grammar Lab},\n  year      = {2025},\n  publisher = {Your Publisher Name}\n}",
+      "valid": true,
+      "error": null,
+      "new_tokens": 47,
+      "elapsed_seconds": 3.325,
+      "rendered_prompt": "<|im_start|>system\nReturn only one complete BibTeX citation. No explanation or Markdown. Keep fields short.<|im_end|>\n<|im_start|>user\nGenerate one BibTeX book entry for a fictional book titled Grammar Lab by Alex Rivera, published in 2025.<|im_end|>\n<|im_start|>assistant\n",
+      "token_trace": [
+        {
+          "step": 1,
+          "prefix": "",
+          "model_top_choices": [
+            {
+              "token_id": 73594,
+              "text": "```",
+              "score": 20.289623260498047,
+              "allowed": false
+            },
+            {
+              "token_id": 31,
+              "text": "@",
+              "score": 19.878950119018555,
+              "allowed": true
+            },
+            {
+              "token_id": 95456,
+              "text": "Certainly",
+              "score": 16.518234252929688,
+              "allowed": false
+            },
+            {
+              "token_id": 13874,
+              "text": "``",
+              "score": 16.347261428833008,
+              "allowed": false
+            },
+            {
+              "token_id": 33,
+              "text": "B",
+              "score": 15.126044273376465,
+              "allowed": false
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 31,
+              "text": "@",
+              "score": 19.878950119018555
+            },
+            {
+              "token_id": 1066,
+              "text": "    \n",
+              "score": 9.357076644897461
+            },
+            {
+              "token_id": 262,
+              "text": "   ",
+              "score": 8.62144660949707
+            },
+            {
+              "token_id": 6421,
+              "text": "    \r\n",
+              "score": 8.057799339294434
+            },
+            {
+              "token_id": 197,
+              "text": "\t",
+              "score": 7.984716892242432
+            }
+          ],
+          "selected_token_id": 31,
+          "selected_token": "@"
+        },
+        {
+          "step": 2,
+          "prefix": "@",
+          "model_top_choices": [
+            {
+              "token_id": 2190,
+              "text": "book",
+              "score": 21.53113555908203,
+              "allowed": true
+            },
+            {
+              "token_id": 258,
+              "text": "in",
+              "score": 18.80160903930664,
+              "allowed": true
+            },
+            {
+              "token_id": 7134,
+              "text": "Book",
+              "score": 17.89344024658203,
+              "allowed": true
+            },
+            {
+              "token_id": 2840,
+              "text": "inc",
+              "score": 16.709318161010742,
+              "allowed": true
+            },
+            {
+              "token_id": 36625,
+              "text": "BOOK",
+              "score": 16.36020278930664,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 2190,
+              "text": "book",
+              "score": 21.53113555908203
+            },
+            {
+              "token_id": 258,
+              "text": "in",
+              "score": 18.80160903930664
+            },
+            {
+              "token_id": 7134,
+              "text": "Book",
+              "score": 17.89344024658203
+            },
+            {
+              "token_id": 2840,
+              "text": "inc",
+              "score": 16.709318161010742
+            },
+            {
+              "token_id": 36625,
+              "text": "BOOK",
+              "score": 16.36020278930664
+            }
+          ],
+          "selected_token_id": 2190,
+          "selected_token": "book"
+        },
+        {
+          "step": 3,
+          "prefix": "@book",
+          "model_top_choices": [
+            {
+              "token_id": 90,
+              "text": "{",
+              "score": 22.064376831054688,
+              "allowed": true
+            },
+            {
+              "token_id": 76025,
+              "text": "{T",
+              "score": 17.130455017089844,
+              "allowed": true
+            },
+            {
+              "token_id": 515,
+              "text": "{\n",
+              "score": 17.009328842163086,
+              "allowed": true
+            },
+            {
+              "token_id": 69094,
+              "text": "{k",
+              "score": 15.678067207336426,
+              "allowed": true
+            },
+            {
+              "token_id": 2102,
+              "text": "title",
+              "score": 15.667022705078125,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 90,
+              "text": "{",
+              "score": 22.064376831054688
+            },
+            {
+              "token_id": 76025,
+              "text": "{T",
+              "score": 17.130455017089844
+            },
+            {
+              "token_id": 515,
+              "text": "{\n",
+              "score": 17.009328842163086
+            },
+            {
+              "token_id": 69094,
+              "text": "{k",
+              "score": 15.678067207336426
+            },
+            {
+              "token_id": 2102,
+              "text": "title",
+              "score": 15.667022705078125
+            }
+          ],
+          "selected_token_id": 90,
+          "selected_token": "{"
+        },
+        {
+          "step": 4,
+          "prefix": "@book{",
+          "model_top_choices": [
+            {
+              "token_id": 5469,
+              "text": "river",
+              "score": 16.4226016998291,
+              "allowed": true
+            },
+            {
+              "token_id": 85699,
+              "text": "River",
+              "score": 16.003206253051758,
+              "allowed": true
+            },
+            {
+              "token_id": 55875,
+              "text": "alex",
+              "score": 14.74209213256836,
+              "allowed": true
+            },
+            {
+              "token_id": 11611,
+              "text": "ray",
+              "score": 14.657492637634277,
+              "allowed": true
+            },
+            {
+              "token_id": 81,
+              "text": "r",
+              "score": 14.609979629516602,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 5469,
+              "text": "river",
+              "score": 16.4226016998291
+            },
+            {
+              "token_id": 85699,
+              "text": "River",
+              "score": 16.003206253051758
+            },
+            {
+              "token_id": 55875,
+              "text": "alex",
+              "score": 14.74209213256836
+            },
+            {
+              "token_id": 11611,
+              "text": "ray",
+              "score": 14.657492637634277
+            },
+            {
+              "token_id": 81,
+              "text": "r",
+              "score": 14.609979629516602
+            }
+          ],
+          "selected_token_id": 5469,
+          "selected_token": "river"
+        },
+        {
+          "step": 5,
+          "prefix": "@book{river",
+          "model_top_choices": [
+            {
+              "token_id": 64,
+              "text": "a",
+              "score": 21.247648239135742,
+              "allowed": true
+            },
+            {
+              "token_id": 34183,
+              "text": "dale",
+              "score": 17.40645980834961,
+              "allowed": true
+            },
+            {
+              "token_id": 300,
+              "text": "as",
+              "score": 15.74327278137207,
+              "allowed": true
+            },
+            {
+              "token_id": 1515,
+              "text": "man",
+              "score": 14.73815631866455,
+              "allowed": true
+            },
+            {
+              "token_id": 1692,
+              "text": "alk",
+              "score": 14.241159439086914,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 64,
+              "text": "a",
+              "score": 21.247648239135742
+            },
+            {
+              "token_id": 34183,
+              "text": "dale",
+              "score": 17.40645980834961
+            },
+            {
+              "token_id": 300,
+              "text": "as",
+              "score": 15.74327278137207
+            },
+            {
+              "token_id": 1515,
+              "text": "man",
+              "score": 14.73815631866455
+            },
+            {
+              "token_id": 1692,
+              "text": "alk",
+              "score": 14.241159439086914
+            }
+          ],
+          "selected_token_id": 64,
+          "selected_token": "a"
+        },
+        {
+          "step": 6,
+          "prefix": "@book{rivera",
+          "model_top_choices": [
+            {
+              "token_id": 17,
+              "text": "2",
+              "score": 16.636924743652344,
+              "allowed": true
+            },
+            {
+              "token_id": 62,
+              "text": "_",
+              "score": 14.849410057067871,
+              "allowed": true
+            },
+            {
+              "token_id": 15682,
+              "text": "_gr",
+              "score": 13.920920372009277,
+              "allowed": true
+            },
+            {
+              "token_id": 25,
+              "text": ":",
+              "score": 13.698232650756836,
+              "allowed": true
+            },
+            {
+              "token_id": 1889,
+              "text": "_g",
+              "score": 13.664246559143066,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 17,
+              "text": "2",
+              "score": 16.636924743652344
+            },
+            {
+              "token_id": 62,
+              "text": "_",
+              "score": 14.849410057067871
+            },
+            {
+              "token_id": 15682,
+              "text": "_gr",
+              "score": 13.920920372009277
+            },
+            {
+              "token_id": 25,
+              "text": ":",
+              "score": 13.698232650756836
+            },
+            {
+              "token_id": 1889,
+              "text": "_g",
+              "score": 13.664246559143066
+            }
+          ],
+          "selected_token_id": 17,
+          "selected_token": "2"
+        },
+        {
+          "step": 7,
+          "prefix": "@book{rivera2",
+          "model_top_choices": [
+            {
+              "token_id": 15,
+              "text": "0",
+              "score": 24.980083465576172,
+              "allowed": true
+            },
+            {
+              "token_id": 20,
+              "text": "5",
+              "score": 20.347061157226562,
+              "allowed": true
+            },
+            {
+              "token_id": 16,
+              "text": "1",
+              "score": 17.122299194335938,
+              "allowed": true
+            },
+            {
+              "token_id": 345,
+              "text": ",\n",
+              "score": 16.2701473236084,
+              "allowed": true
+            },
+            {
+              "token_id": 19,
+              "text": "4",
+              "score": 16.106201171875,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 15,
+              "text": "0",
+              "score": 24.980083465576172
+            },
+            {
+              "token_id": 20,
+              "text": "5",
+              "score": 20.347061157226562
+            },
+            {
+              "token_id": 16,
+              "text": "1",
+              "score": 17.122299194335938
+            },
+            {
+              "token_id": 345,
+              "text": ",\n",
+              "score": 16.2701473236084
+            },
+            {
+              "token_id": 19,
+              "text": "4",
+              "score": 16.106201171875
+            }
+          ],
+          "selected_token_id": 15,
+          "selected_token": "0"
+        },
+        {
+          "step": 8,
+          "prefix": "@book{rivera20",
+          "model_top_choices": [
+            {
+              "token_id": 17,
+              "text": "2",
+              "score": 24.735727310180664,
+              "allowed": true
+            },
+            {
+              "token_id": 16,
+              "text": "1",
+              "score": 18.6435489654541,
+              "allowed": true
+            },
+            {
+              "token_id": 15,
+              "text": "0",
+              "score": 15.8353910446167,
+              "allowed": true
+            },
+            {
+              "token_id": 345,
+              "text": ",\n",
+              "score": 14.723705291748047,
+              "allowed": true
+            },
+            {
+              "token_id": 18,
+              "text": "3",
+              "score": 14.091907501220703,
+              "allowed": true
+            }
+          ],
+          "allowed_top_choices": [
+            {
+              "token_id": 17,
+              "text": "2",
+              "score": 24.735727310180664
+            },
+            {
+              "token_id": 16,
+              "text": "1",
+              "score": 18.6435489654541
+            },
+            {
+              "token_id": 15,
+              "text": "0",
+              "score": 15.8353910446167
+            },
+            {
+              "token_id": 345,
+              "text": ",\n",
+              "score": 14.723705291748047
+            },
+            {
+              "token_id": 18,
+              "text": "3",
+              "score": 14.091907501220703
+            }
+          ],
+          "selected_token_id": 17,
+          "selected_token": "2"
+        }
+      ],
+      "generated_token_ids": [
+        31,
+        2190,
+        90,
+        5469,
+        64,
+        17,
+        15,
+        17,
+        20,
+        41094,
+        14380,
+        345,
+        220,
+        3150,
+        262,
+        284,
+        314,
+        27387,
+        63110,
+        1583,
+        220,
+        2265,
+        257,
+        284,
+        314,
+        97178,
+        11607,
+        1583,
+        220,
+        1042,
+        414,
+        284,
+        314,
+        17,
+        15,
+        17,
+        20,
+        1583,
+        220,
+        21262,
+        284,
+        314,
+        7771,
+        39133,
+        3988,
+        532,
+        92
+      ],
+      "trace_matches_output": true,
+      "termination": "valid_citation"
+    }
+  ]
+}

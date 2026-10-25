@@ -18,7 +18,7 @@ quoted: "\"" (text | braced)* "\""
 // Disjoint terminals work with both Lark's contextual lexer and SynCode's basic lexer.
 LETTERS: /[a-zA-Z_]+/
 NUMBER: /[0-9]+/
-SYMBOL: /[^\sa-zA-Z0-9_{}"\\@,=#()]+/
+SYMBOL: /[^ \t\r\n\fa-zA-Z0-9_{}"\\@,=#()]+/
 ESCAPE: /\\[^\r\n]/
 WS: /[ \t\r\n\f]+/
 _ws: WS?

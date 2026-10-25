@@ -130,10 +130,54 @@ continuations, which is why final parsing remains part of the implementation.
   broader grammar conformance, factual citation verification, and larger held-out
   generation evaluation remain separate engineering work.
 
-The automated suite includes 7 supplied examples, 40 additional valid cases,
-24 malformed cases, 2 SynCode parser compatibility tests, and 8 reviewer-demo
-tests: **81 tests**. The original test harness required a one-line start-rule
+The automated suite includes 7 supplied examples, 41 additional valid cases,
+24 malformed cases, 2 SynCode parser compatibility tests, and 13 reviewer-demo
+tests: **87 tests**. The original test harness required a one-line start-rule
 correction; all seven original test bodies and assertions remain intact.
+
+## Measured bounds, not a claim of exhaustive coverage
+
+The **Test cases** tab is an interactive fixture runner, separate from the
+recorded **Test spectrum**. Select a group and case to inspect its input,
+expectation, reason, and requirement tags. Run the original fixture to get a
+fresh parse-tree preview or actual error. The full source is used for stress
+fixtures even when the browser shows only a preview. Tree previews are bounded
+iteratively so deeply nested valid input does not crash display rendering.
+
+The catalog has 224 fixtures: 7 original assignment inputs, extracted from the
+unchanged test bodies with Python's AST/literal reader, plus the 217 selected
+boundary observations. These counts overlap the regression suite. HTTP unit
+tests and model-generation trials are separate evaluations, not additional
+BibTeX fixtures in this tab.
+
+You can run a group (or all groups) and inspect every observed result. Small
+inputs can be edited and tested with an explicitly selected expectation;
+edited experiments are labeled separately from original fixtures. Requirement
+tags trace cases to the supported behavior and scope boundaries; counts are
+evidence examples, not percentages of complete language conformance.
+
+Run `evaluate_bounds.py` or choose option 6 in `terminal_demo.py`. The report
+contains 217 parser observations, including the 65 existing valid/invalid
+regression cases. It is not 217 independent tests of model generation.
+
+The spectrum combines 48 deliberately chosen feature interactions, all 58
+incomplete prefixes of one complete citation, matched valid/invalid stress cases,
+semantic limits, and scope exclusions. Stress probes reach 1,000 additional
+nested groups, 1,000 entries, and a 100,000-character field value. Those are the
+largest tested points, not proven maximum supported inputs. Each case is timed
+three times; the report gives descriptive medians, not a controlled speed claim.
+The browser editor has a separate 20,000-character request cap.
+
+The initial spectrum found a defect involving non-breaking and thin spaces
+inside values. `results/boundary-before.json` preserves that failure. The fix
+made structural ASCII whitespace distinct from literal Unicode spacing in
+values and added a regression fixture. `results/boundary-report.json` records
+the after-fix outcomes. Inputs remain reproducible through the case generator,
+source previews, input hashes, and grammar hash.
+
+Accepting invented publications or undefined macros demonstrates a semantic
+limit, not successful fact-checking. Rejecting `@string` or `@preamble` demonstrates
+the declared citation subset, not that those constructs are invalid BibTeX.
 
 ## Primary references
 

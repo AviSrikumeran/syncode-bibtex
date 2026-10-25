@@ -23,6 +23,7 @@ VALID = {
     'latex': r'@article{k,author={M{\"u}ller},title={\textbf{Bold} $\sum_{i=1}^{n} x_i$}}',
     'escaped_braces': r'@misc{k,title={Literal \{ and \} symbols}}',
     'unicode': '@misc{k,title={日本語, naïve, García, Ελληνικά 🧪}}',
+    'unicode_spacing': '@misc{k,title={non\u00a0breaking\u2009space}}',
     'punctuation': '@misc{k,url={https://example.org/a?x=1&y=2#part},doi={10.1234/a_b:c}}',
     'inner_delimiters': '@misc{k,note={a,b=c @person (text) # % & $ _ ~}}',
     'multiline': '@misc{k,\n title = {First line\nSecond line},\n year = "2024"\n}',

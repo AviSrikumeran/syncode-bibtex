@@ -5,6 +5,10 @@ with a Lark LALR grammar, SynCode generation, and automated syntax tests.
 
 ## Reviewer demonstration
 
+For an independent terminal walkthrough, run
+`.venv\Scripts\python.exe terminal_demo.py --offline` after setup. See
+[VIDEO_WALKTHROUGH.md](VIDEO_WALKTHROUGH.md) for a suggested recording sequence.
+
 Read [REVIEWER.md](REVIEWER.md) for the experimental claim, alternatives,
 limitations, and reproduction procedure. After installation, run
 `.venv\Scripts\python.exe review_demo.py` and open `http://127.0.0.1:8765`.
@@ -34,11 +38,19 @@ On macOS/Linux, create the environment with `python3.12 -m venv .venv` and use
 The model demonstration downloads approximately 1 GB on its first run.
 `RUN_DEMO.cmd` is an offline Windows launcher for an already prepared environment.
 
-Verified results: **7 supplied tests, 40 additional valid cases, 24 invalid
-cases, 2 SynCode compatibility tests, and 8 reviewer-demo tests passed** (81 total). The final constrained
+Verified results: **7 supplied tests, 41 additional valid cases, 24 invalid
+cases, 2 SynCode compatibility tests, and 13 reviewer-demo tests passed** (87 total). The final constrained
 generation run produced **3/3 outputs that parsed successfully**. The supplied
 test harness has one documented correction: `bibTex` to `start`; all seven test
 bodies remain unchanged.
+
+Run `.venv\Scripts\python.exe evaluate_bounds.py` for the measured test spectrum:
+217 selected parser observations spanning nesting, document size, long values,
+feature interactions, truncation, semantic limits, and documented scope. These
+include the existing regression cases; they are not 217 independent model trials.
+The separate **Test cases** browser tab maps fixtures to requirements, runs
+individual or grouped cases against the parser, and lets you edit small inputs
+with an explicitly chosen expectation.
 
 See [IMPLEMENTATION.md](IMPLEMENTATION.md) for the design, scope, test details,
 and honest comparison results. Actual successful and failed runs are preserved

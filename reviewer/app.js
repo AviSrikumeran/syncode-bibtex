@@ -65,6 +65,7 @@ function loadReport(value, label) {
     $(id).replaceChildren(...prompts.map((prompt, index) => { const option = document.createElement('option'); option.value = index; option.textContent = `${index + 1}. ${['Article', 'Conference paper', 'Book'][index] || 'Custom prompt'}`; return option; }));
   }
   $('evidence-label').textContent = `${label} · ${report.evidence_file} · ${report.created_at_utc || 'Timestamp not recorded in this older run'}`;
+  if (report.grammar_matches_recorded === false) $('evidence-label').textContent += ' · Archived grammar differs from the current validator';
   const metadata = {
     'Model': report.model, 'Model revision': report.revision, 'Grammar SHA-256': report.grammar_sha256,
     'Source SHA-256': report.source_sha256 || 'Not recorded in this older run',
@@ -113,3 +114,117 @@ $('live-run').onclick = async () => {
 };
 showComponent('syncode'); $('bibtex-input').value = examples.nested;
 fetch('/api/evidence').then(response => { if (!response.ok) throw Error('Could not load the saved evidence.'); return response.json(); }).then(value => loadReport(value, 'Recorded real experiment')).catch(error => { $('evidence-label').textContent = error.message; });
+
+fetch('/api/bounds').then(async response => {
+  const value = await response.json(); if (!response.ok) throw Error(value.error);
+  const rows = value.after.cases;
+  const matched = rows.filter(row => row.matched_expectation).length;
+  $('bounds-status').textContent = `${matched}/${rows.length} documented expectations matched. ${value.after.repeats} repetitions per case. Report: ${value.after.created_at_utc}.`;
+  if (value.after.grammar_sha256 !== value.active_grammar_sha256) $('bounds-status').textContent += ' WARNING: report grammar differs from the active grammar.';
+  const groups = new Map();
+  for (const record of rows) {
+    if (!groups.has(record.category)) groups.set(record.category, []);
+    groups.get(record.category).push(record);
+    const row = document.createElement('tr');
+    const details = document.createElement('details'); const summary = document.createElement('summary');
+    summary.textContent = record.category + ' / ' + record.name;
+    const preview = document.createElement('pre');
+    preview.textContent = `Characters: ${record.characters}\nInput SHA-256: ${record.source_sha256}\nPreview (first 400 characters):\n${record.preview}\n\n${record.error || ''}`;
+    details.append(summary, preview); const nameCell = document.createElement('td'); nameCell.append(details); row.append(nameCell);
+    cell(row, record.expected_accept ? 'Accept' : 'Reject'); cell(row, record.actual_accept ? 'Accepted' : 'Rejected');
+    cell(row, record.matched_expectation ? 'Yes' : 'NO'); cell(row, record.median_ms.toFixed(4)); $('bounds-cases').append(row);
+    if (['nesting-valid', 'document-size-valid', 'value-length-valid'].includes(record.category)) {
+      const scale = document.createElement('tr'); cell(scale, record.name); cell(scale, record.characters);
+      cell(scale, record.actual_accept ? 'Yes' : 'No'); cell(scale, record.median_ms.toFixed(4)); $('bounds-scale').append(scale);
+    }
+  }
+  for (const [category, records] of groups) {
+    const times = records.map(record => record.median_ms).sort((a, b) => a - b);
+    const middle = Math.floor(times.length / 2);
+    const median = times.length % 2 ? times[middle] : (times[middle - 1] + times[middle]) / 2;
+    const row = document.createElement('tr'); cell(row, category);
+    cell(row, `${records.filter(record => record.matched_expectation).length}/${records.length}`); cell(row, median.toFixed(4)); $('bounds-groups').append(row);
+  }
+  const failures = value.before?.cases.filter(record => !record.matched_expectation) || [];
+  $('bounds-defect').textContent = failures.length ?
+    'Preserved before-fix failure: ' + failures.map(record => `${record.category}/${record.name} expected acceptance=${record.expected_accept}, observed acceptance=${record.actual_accept} (${record.error_type})`).join('; ') + '. The after-fix report includes the regression case.' : 'No before-fix report available.';
+}).catch(error => { $('bounds-status').textContent = error.message; });
+
+let caseCatalog;
+function selectedCase() { return caseCatalog.cases.find(item => item.case_id === $('case-select').value); }
+function renderSelectedCase() {
+  const item = selectedCase(); if (!item) return;
+  $('case-reason').textContent = 'What this checks: ' + caseCatalog.groups[item.category];
+  $('case-requirements').textContent = 'Requirement tags: ' + item.requirements.map(id => `${id} — ${caseCatalog.requirements[id]}`).join('; ');
+  $('case-original-expectation').textContent = 'Original fixture expectation: ' + (item.expected_accept ? 'Accept' : 'Reject');
+  $('case-source-info').textContent = `${item.characters} characters; SHA-256 ${item.source_sha256}` + (item.source === null ? '. Preview only: the original-fixture action parses the full generated input.' : '');
+  $('case-input').value = item.source === null ? item.preview : item.source;
+  $('case-input').readOnly = item.source === null;
+  $('run-edited-case').disabled = item.source === null;
+  $('case-edited-expected').value = String(item.expected_accept);
+  $('case-run-status').textContent = 'Not run. The expectation above is not an execution result.';
+  $('case-run-detail').textContent = '';
+}
+function filterCases() {
+  const group = $('case-group').value;
+  const items = caseCatalog.cases.filter(item => group === '*' || item.category === group);
+  $('case-select').replaceChildren(...items.map(item => {
+    const option = document.createElement('option'); option.value = item.case_id; option.textContent = item.name; return option;
+  }));
+  $('case-catalog-status').textContent = `${items.length} fixtures in this selection; ${caseCatalog.cases.length} in the complete catalog.`;
+  $('case-group-results').replaceChildren(); $('case-group-status').textContent = '';
+  renderSelectedCase();
+}
+function showCaseResult(result, label) {
+  $('case-run-status').textContent = `${label}: ${result.crash ? 'PARSER CRASH' : result.actual_accept ? 'Accepted' : 'Rejected'}; expected ${result.expected_accept ? 'accept' : 'reject'}; ${result.matched_expectation ? 'expectation matched' : 'EXPECTATION NOT MATCHED'}.`;
+  $('case-run-detail').textContent = `Input characters: ${result.characters}\nInput SHA-256: ${result.source_sha256 || '(edited input)'}\nParse time: ${result.elapsed_ms === undefined ? 'not measured' : result.elapsed_ms + ' ms'}\n\n${result.tree || result.error || 'No tree/error preview returned. Inspect this fixture individually for a tree.'}`;
+}
+async function caseRequest(path, payload) {
+  const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+  const result = await response.json(); if (!response.ok) throw Error(result.error); return result;
+}
+$('case-group').onchange = filterCases;
+$('case-select').onchange = renderSelectedCase;
+$('run-original-case').onclick = async () => {
+  $('run-original-case').disabled = true;
+  try { showCaseResult(await caseRequest('/api/run-case', {case_id: selectedCase().case_id}), 'Original fixture run'); }
+  catch (error) { $('case-run-status').textContent = error.message; }
+  finally { $('run-original-case').disabled = false; }
+};
+$('run-edited-case').onclick = async () => {
+  try {
+    const source = $('case-input').value;
+    const result = await caseRequest('/api/validate', {source});
+    const expected = $('case-edited-expected').value === 'true';
+    showCaseResult({actual_accept: result.raw_valid, expected_accept: expected, matched_expectation: result.raw_valid === expected,
+      tree: result.tree, error: result.raw_error, characters: source.length}, 'Edited input run');
+  } catch (error) { $('case-run-status').textContent = error.message; }
+};
+$('run-case-group').onclick = async () => {
+  $('run-case-group').disabled = true; $('case-group-status').textContent = 'Running actual parser checks…';
+  try {
+    const batch = await caseRequest('/api/run-group', {group: $('case-group').value});
+    $('case-group-results').replaceChildren();
+    for (const result of batch.results) {
+      const row = document.createElement('tr'); cell(row, result.name); cell(row, result.expected_accept ? 'Accept' : 'Reject');
+      cell(row, result.crash ? 'CRASH' : result.actual_accept ? 'Accepted' : 'Rejected'); cell(row, result.matched_expectation ? 'Yes' : 'NO'); cell(row, result.elapsed_ms.toFixed(4));
+      const td = document.createElement('td'); const inspect = document.createElement('button'); inspect.textContent = 'Inspect';
+      inspect.onclick = () => { $('case-select').value = result.case_id; renderSelectedCase(); showCaseResult(result, 'Group-run result'); };
+      td.append(inspect); row.append(td); $('case-group-results').append(row);
+    }
+    $('case-group-status').textContent = `${batch.matched}/${batch.total} expectations matched in this fresh group run. These are parser checks, not model generations.`;
+  } catch (error) { $('case-group-status').textContent = error.message; }
+  finally { $('run-case-group').disabled = false; }
+};
+fetch('/api/cases').then(async response => {
+  const value = await response.json(); if (!response.ok) throw Error(value.error); caseCatalog = value;
+  const all = document.createElement('option'); all.value = '*'; all.textContent = 'All groups';
+  $('case-group').replaceChildren(all, ...Object.keys(value.groups).map(group => {
+    const option = document.createElement('option'); option.value = group; option.textContent = group; return option;
+  }));
+  $('case-group').value = 'provided-assignment'; filterCases();
+  for (const [id, description] of Object.entries(value.requirements)) {
+    const row = document.createElement('tr'); cell(row, id); cell(row, description);
+    cell(row, value.cases.filter(item => item.requirements.includes(id)).length); $('case-requirement-map').append(row);
+  }
+}).catch(error => { $('case-catalog-status').textContent = error.message; });

@@ -1,0 +1,106 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "seed": 0,
+  "mode": "grammar_mask",
+  "revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+  "grammar_sha256": "dc1ba6f8b2fa742cdf71d1280d650ef28dcbb5d552909afe1ed40be56969b1d4",
+  "versions": {
+    "lark": "1.2.2",
+    "syncode": "0.4.16",
+    "torch": "2.14.1",
+    "transformers": "4.53.2"
+  },
+  "max_new_tokens": 256,
+  "examples": [
+    {
+      "name": "article",
+      "source": "@article{smith2024,author={John Smith},title={A Study},year=2024}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "mixed fields",
+      "source": "@book{sutton,title=\"Reinforcement Learning\",author={Sutton and Barto}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "multiple entries",
+      "source": "@misc{a,title={One}} @techreport{b,title={Two}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "40 nested groups",
+      "source": "@article{deep,title={{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{Nested}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "malformed input",
+      "source": "@article{broken,title={Unfinished}",
+      "valid": false,
+      "expected_valid": false,
+      "passed": true,
+      "error": "Unexpected token Token('$END', '') at line 1, column 34.\nExpected one of: \n\t* WS\n\t* COMMA\n\t* RBRACE\n\t* HASH\n"
+    }
+  ],
+  "generations": [
+    {
+      "prompt": "Generate one BibTeX article entry for a paper about LLM security.",
+      "mode": "unconstrained",
+      "output": "```bibtex\n@article{liu2023llm,\n  title={LLM Security: A Comprehensive Analysis},\n  author={Liu, Yiming and Wang, Zhihui and Zhang, Xiangyu and Li, Shuhua and Chen, Xiaohong and Sun, Hongbin and Liu, Jie and Wu, Yanping and Zhou, Heng},\n  journal={Journal of Computer Security},\n  volume={31},\n  number={4},\n  pages={579--608},\n  year={2023}\n}\n```",
+      "valid": false,
+      "error": "Unexpected token Token('SYMBOL', '```') at line 1, column 1.\nExpected one of: \n\t* WS\n\t* AT\n",
+      "new_tokens": 123
+    },
+    {
+      "prompt": "Generate one BibTeX article entry for a paper about LLM security.",
+      "mode": "constrained",
+      "output": "@article{LSTMSecurity,\n  title={LSTM Security: A Review},\n  author={Zhang, Yuhui and Wang, Zhihong and Li, Xiaohua and Zhang, Xingyi and Liu, Sheng},\n  journal={Journal of Computer Science and Technology},\n  volume={36},\n  number={1},\n  pages={20--45},\n  year={2021}\n}",
+      "valid": true,
+      "error": null,
+      "new_tokens": 90
+    },
+    {
+      "prompt": "Generate one BibTeX inproceedings entry for a conference paper by Smith and Johnson.",
+      "mode": "unconstrained",
+      "output": "```bibtex\n@inproceedings{smith2019,\n  title={A Study on the Impact of Social Media on Online Learning},\n  author={Smith, John and Johnson, Sarah},\n  booktitle={Proceedings of the Conference on Information Systems (CIS)},\n  year={2019}\n}\n```",
+      "valid": false,
+      "error": "Unexpected token Token('SYMBOL', '```') at line 1, column 1.\nExpected one of: \n\t* WS\n\t* AT\n",
+      "new_tokens": 70
+    },
+    {
+      "prompt": "Generate one BibTeX inproceedings entry for a conference paper by Smith and Johnson.",
+      "mode": "constrained",
+      "output": "@inproceedings{smith2019,\n  title={A Study on the Impact of Social Media on Online Learning},\n  author={Smith, John and Johnson, Sarah},\n  booktitle={Proceedings of the Conference on Information Systems (CIS)},\n  year={2019}\n}",
+      "valid": true,
+      "error": null,
+      "new_tokens": 63
+    },
+    {
+      "prompt": "Generate one BibTeX book entry for Reinforcement Learning by Sutton and Barto.",
+      "mode": "unconstrained",
+      "output": "```bibtex\n@book{SuttonBarto,\n  title={Reinforcement learning: An introduction},\n  author={Sutton, Richard S. and Barto, Andrew G.},\n  publisher={MIT Press}\n}\n```",
+      "valid": false,
+      "error": "Unexpected token Token('SYMBOL', '```') at line 1, column 1.\nExpected one of: \n\t* WS\n\t* AT\n",
+      "new_tokens": 50
+    },
+    {
+      "prompt": "Generate one BibTeX book entry for Reinforcement Learning by Sutton and Barto.",
+      "mode": "constrained",
+      "output": "@book{barto2018reinforcement,\n  title={Reinforcement learning: An introduction},\n  author={Barto, Andrew G and Sutton, Richard S},\n  year={2018}\n}",
+      "valid": true,
+      "error": null,
+      "new_tokens": 47
+    }
+  ]
+}

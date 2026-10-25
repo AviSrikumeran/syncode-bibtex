@@ -1,0 +1,53 @@
+{
+  "model": null,
+  "seed": 0,
+  "revision": null,
+  "grammar_sha256": "dc1ba6f8b2fa742cdf71d1280d650ef28dcbb5d552909afe1ed40be56969b1d4",
+  "versions": {
+    "lark": "1.2.2"
+  },
+  "max_new_tokens": 256,
+  "examples": [
+    {
+      "name": "article",
+      "source": "@article{smith2024,author={John Smith},title={A Study},year=2024}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "mixed fields",
+      "source": "@book{sutton,title=\"Reinforcement Learning\",author={Sutton and Barto}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "multiple entries",
+      "source": "@misc{a,title={One}} @techreport{b,title={Two}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "40 nested groups",
+      "source": "@article{deep,title={{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{Nested}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "malformed input",
+      "source": "@article{broken,title={Unfinished}",
+      "valid": false,
+      "expected_valid": false,
+      "passed": true,
+      "error": "Unexpected token Token('$END', '') at line 1, column 34.\nExpected one of: \n\t* HASH\n\t* COMMA\n\t* WS\n\t* RBRACE\n"
+    }
+  ],
+  "generations": []
+}

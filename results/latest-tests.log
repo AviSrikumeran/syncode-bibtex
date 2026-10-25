@@ -1,0 +1,114 @@
+
+Provided assignment tests
+test_article (test.TestBibTeXGrammar.test_article)
+Test parsing a standard article entry. ... ok
+test_book_with_complex_fields (test.TestBibTeXGrammar.test_book_with_complex_fields)
+Test parsing a book with complex fields including edition and ISBN. ... ok
+test_complex_author_list (test.TestBibTeXGrammar.test_complex_author_list)
+Test parsing an entry with a complex author list. ... ok
+test_multiple_entries_and_types (test.TestBibTeXGrammar.test_multiple_entries_and_types)
+Test parsing multiple entries of different types in a single file. ... ok
+test_provided_examples (test.TestBibTeXGrammar.test_provided_examples)
+Test parsing the provided examples from the assignment. ... ok
+test_with_quotes_and_mixed_formats (test.TestBibTeXGrammar.test_with_quotes_and_mixed_formats)
+Test parsing an entry using quotes for some values and braces for others. ... ok
+test_with_special_characters (test.TestBibTeXGrammar.test_with_special_characters)
+Test parsing an entry with special LaTeX characters and commands. ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.191s
+
+OK
+Provided assignment tests: 7/7 passed
+
+Additional valid inputs
+test_adjacent_entries (tests.test_edge_cases.ValidInputTests.test_adjacent_entries) ... ok
+test_bare_macro (tests.test_edge_cases.ValidInputTests.test_bare_macro) ... ok
+test_bibliographic_incompleteness (tests.test_edge_cases.ValidInputTests.test_bibliographic_incompleteness) ... ok
+test_braced_quotes (tests.test_edge_cases.ValidInputTests.test_braced_quotes) ... ok
+test_concatenation (tests.test_edge_cases.ValidInputTests.test_concatenation) ... ok
+test_custom_field (tests.test_edge_cases.ValidInputTests.test_custom_field) ... ok
+test_deep_nesting (tests.test_edge_cases.ValidInputTests.test_deep_nesting) ... ok
+test_duplicate_keys (tests.test_edge_cases.ValidInputTests.test_duplicate_keys) ... ok
+test_empty_braced (tests.test_edge_cases.ValidInputTests.test_empty_braced) ... ok
+test_empty_quoted (tests.test_edge_cases.ValidInputTests.test_empty_quoted) ... ok
+test_escaped_braces (tests.test_edge_cases.ValidInputTests.test_escaped_braces) ... ok
+test_escaped_quotes (tests.test_edge_cases.ValidInputTests.test_escaped_quotes) ... ok
+test_inner_delimiters (tests.test_edge_cases.ValidInputTests.test_inner_delimiters) ... ok
+test_key_punctuation (tests.test_edge_cases.ValidInputTests.test_key_punctuation) ... ok
+test_latex (tests.test_edge_cases.ValidInputTests.test_latex) ... ok
+test_mixed_case (tests.test_edge_cases.ValidInputTests.test_mixed_case) ... ok
+test_mixed_values (tests.test_edge_cases.ValidInputTests.test_mixed_values) ... ok
+test_multiline (tests.test_edge_cases.ValidInputTests.test_multiline) ... ok
+test_no_fields (tests.test_edge_cases.ValidInputTests.test_no_fields) ... ok
+test_numeric_key (tests.test_edge_cases.ValidInputTests.test_numeric_key) ... ok
+test_parentheses (tests.test_edge_cases.ValidInputTests.test_parentheses) ... ok
+test_punctuation (tests.test_edge_cases.ValidInputTests.test_punctuation) ... ok
+test_quoted_nested (tests.test_edge_cases.ValidInputTests.test_quoted_nested) ... ok
+test_trailing_comma (tests.test_edge_cases.ValidInputTests.test_trailing_comma) ... ok
+test_type_article (tests.test_edge_cases.ValidInputTests.test_type_article) ... ok
+test_type_book (tests.test_edge_cases.ValidInputTests.test_type_book) ... ok
+test_type_booklet (tests.test_edge_cases.ValidInputTests.test_type_booklet) ... ok
+test_type_conference (tests.test_edge_cases.ValidInputTests.test_type_conference) ... ok
+test_type_inbook (tests.test_edge_cases.ValidInputTests.test_type_inbook) ... ok
+test_type_incollection (tests.test_edge_cases.ValidInputTests.test_type_incollection) ... ok
+test_type_inproceedings (tests.test_edge_cases.ValidInputTests.test_type_inproceedings) ... ok
+test_type_manual (tests.test_edge_cases.ValidInputTests.test_type_manual) ... ok
+test_type_mastersthesis (tests.test_edge_cases.ValidInputTests.test_type_mastersthesis) ... ok
+test_type_misc (tests.test_edge_cases.ValidInputTests.test_type_misc) ... ok
+test_type_phdthesis (tests.test_edge_cases.ValidInputTests.test_type_phdthesis) ... ok
+test_type_proceedings (tests.test_edge_cases.ValidInputTests.test_type_proceedings) ... ok
+test_type_techreport (tests.test_edge_cases.ValidInputTests.test_type_techreport) ... ok
+test_type_unpublished (tests.test_edge_cases.ValidInputTests.test_type_unpublished) ... ok
+test_unicode (tests.test_edge_cases.ValidInputTests.test_unicode) ... ok
+test_whitespace (tests.test_edge_cases.ValidInputTests.test_whitespace) ... ok
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.019s
+
+OK
+Additional valid inputs: 40/40 passed
+
+Invalid inputs rejected
+test_bare_phrase (tests.test_edge_cases.InvalidInputTests.test_bare_phrase) ... ok
+test_dangling_concatenation (tests.test_edge_cases.InvalidInputTests.test_dangling_concatenation) ... ok
+test_double_comma (tests.test_edge_cases.InvalidInputTests.test_double_comma) ... ok
+test_empty_document (tests.test_edge_cases.InvalidInputTests.test_empty_document) ... ok
+test_extra_closing_brace (tests.test_edge_cases.InvalidInputTests.test_extra_closing_brace) ... ok
+test_extra_equals (tests.test_edge_cases.InvalidInputTests.test_extra_equals) ... ok
+test_leading_concatenation (tests.test_edge_cases.InvalidInputTests.test_leading_concatenation) ... ok
+test_markdown_fence (tests.test_edge_cases.InvalidInputTests.test_markdown_fence) ... ok
+test_mismatched_entry_delimiters (tests.test_edge_cases.InvalidInputTests.test_mismatched_entry_delimiters) ... ok
+test_missing_at (tests.test_edge_cases.InvalidInputTests.test_missing_at) ... ok
+test_missing_equals (tests.test_edge_cases.InvalidInputTests.test_missing_equals) ... ok
+test_missing_field_comma (tests.test_edge_cases.InvalidInputTests.test_missing_field_comma) ... ok
+test_missing_key (tests.test_edge_cases.InvalidInputTests.test_missing_key) ... ok
+test_missing_key_comma (tests.test_edge_cases.InvalidInputTests.test_missing_key_comma) ... ok
+test_missing_outer_brace (tests.test_edge_cases.InvalidInputTests.test_missing_outer_brace) ... ok
+test_missing_type (tests.test_edge_cases.InvalidInputTests.test_missing_type) ... ok
+test_missing_value (tests.test_edge_cases.InvalidInputTests.test_missing_value) ... ok
+test_missing_value_brace (tests.test_edge_cases.InvalidInputTests.test_missing_value_brace) ... ok
+test_semicolon_separator (tests.test_edge_cases.InvalidInputTests.test_semicolon_separator) ... ok
+test_trailing_prose (tests.test_edge_cases.InvalidInputTests.test_trailing_prose) ... ok
+test_truncated_second_entry (tests.test_edge_cases.InvalidInputTests.test_truncated_second_entry) ... ok
+test_unclosed_quote (tests.test_edge_cases.InvalidInputTests.test_unclosed_quote) ... ok
+test_unmatched_nested_brace (tests.test_edge_cases.InvalidInputTests.test_unmatched_nested_brace) ... ok
+test_unmatched_quote_group (tests.test_edge_cases.InvalidInputTests.test_unmatched_quote_group) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.012s
+
+OK
+Invalid inputs rejected: 24/24 passed
+
+SynCode parser compatibility
+test_invalid_inputs (tests.test_syncode.SynCodeParserTests.test_invalid_inputs) ... ok
+test_valid_inputs (tests.test_syncode.SynCodeParserTests.test_valid_inputs) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 6.430s
+
+OK
+SynCode parser compatibility: 2/2 passed
+
+OVERALL: PASS

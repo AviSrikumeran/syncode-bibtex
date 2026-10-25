@@ -1,0 +1,24 @@
+start: _ws (entry _ws)+
+entry: "@" name _ws "{" _ws citation "}"
+     | "@" name _ws "(" _ws citation ")"
+citation: key _ws "," _ws [fields]
+key: (LETTERS | NUMBER | SYMBOL)+
+name: (LETTERS | SYMBOL) (LETTERS | NUMBER | SYMBOL)*
+fields: field ("," _ws field)* ["," _ws]
+field: name _ws "=" _ws value
+value: atom _ws ("#" _ws atom _ws)*
+?atom: braced | quoted | name | NUMBER
+
+// Recursive groups balance braces without a fixed nesting limit.
+braced: "{" (text | "\"" | braced)* "}"
+quoted: "\"" (text | braced)* "\""
+?text: LETTERS | NUMBER | SYMBOL | WS | ESCAPE
+     | "@" | "," | "=" | "#" | "(" | ")"
+
+// Disjoint terminals work with both Lark's contextual lexer and SynCode's basic lexer.
+LETTERS: /[a-zA-Z_]+/
+NUMBER: /[0-9]+/
+SYMBOL: /[^\sa-zA-Z0-9_{}"\\@,=#()]+/
+ESCAPE: /\\[^\r\n]/
+WS: /[ \t\r\n\f]+/
+_ws: WS?

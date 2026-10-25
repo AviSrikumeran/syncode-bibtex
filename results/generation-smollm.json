@@ -1,0 +1,105 @@
+{
+  "model": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "seed": 0,
+  "revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+  "grammar_sha256": "dc1ba6f8b2fa742cdf71d1280d650ef28dcbb5d552909afe1ed40be56969b1d4",
+  "versions": {
+    "lark": "1.2.2",
+    "syncode": "0.4.16",
+    "torch": "2.14.1",
+    "transformers": "4.53.2"
+  },
+  "max_new_tokens": 256,
+  "examples": [
+    {
+      "name": "article",
+      "source": "@article{smith2024,author={John Smith},title={A Study},year=2024}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "mixed fields",
+      "source": "@book{sutton,title=\"Reinforcement Learning\",author={Sutton and Barto}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "multiple entries",
+      "source": "@misc{a,title={One}} @techreport{b,title={Two}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "40 nested groups",
+      "source": "@article{deep,title={{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{Nested}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}",
+      "valid": true,
+      "expected_valid": true,
+      "passed": true,
+      "error": null
+    },
+    {
+      "name": "malformed input",
+      "source": "@article{broken,title={Unfinished}",
+      "valid": false,
+      "expected_valid": false,
+      "passed": true,
+      "error": "Unexpected token Token('$END', '') at line 1, column 34.\nExpected one of: \n\t* RBRACE\n\t* HASH\n\t* COMMA\n\t* WS\n"
+    }
+  ],
+  "generations": [
+    {
+      "prompt": "Generate one BibTeX article entry for a paper about LLM security.",
+      "mode": "unconstrained",
+      "output": "Lemma 1: The LLM security model is a probabilistic model that describes the probability of a given input being a valid input for a given LLM.\n\nLemma 2: The LLM security model is a probabilistic model that describes the probability of a given input being a valid input for a given LLM.\n\nLemma 3: The LLM security model is a probabilistic model that describes the probability of a given input being a valid input for a given LLM.\n\nLemma 4: The LLM security model is a probabilistic model that describes the probability of a given input being a valid input for a given LLM.\n\nLemma 5: The LLM security model is a probabilistic model that describes the probability of a given input being a valid input for a given LLM.\n\nLemma 6: The LLM security model is a probabilistic model that describes the probability of a given input being a valid input for a given LLM.\n\nLemma 7: The LLM security model is a probabilistic model that describes the probability of a given input being a valid input for a given LLM.\n\nLemma 8: The LLM security model",
+      "valid": false,
+      "error": "Unexpected token Token('LETTERS', 'Lemma') at line 1, column 1.\nExpected one of: \n\t* AT\n\t* WS\n",
+      "new_tokens": 256
+    },
+    {
+      "prompt": "Generate one BibTeX article entry for a paper about LLM security.",
+      "mode": "constrained",
+      "output": "\n@article{LLM_2023_01_01_000000_000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "valid": false,
+      "error": "Unexpected token Token('$END', '') at line 2, column 32.\nExpected one of: \n\t* WS\n\t* SYMBOL\n\t* COMMA\n\t* NUMBER\n\t* LETTERS\n",
+      "new_tokens": 256
+    },
+    {
+      "prompt": "Generate one BibTeX inproceedings entry for a conference paper by Smith and Johnson.",
+      "mode": "unconstrained",
+      "output": "Smith and Johnson, 2022. \"The Impact of Climate Change on Coastal Ecosystems.\" Proceedings of the 2022 International Conference on Climate Change and Environmental Science. https://www.ipcc.ch/conferences/2022/02/climate-change-coastal-ecosystems.html.",
+      "valid": false,
+      "error": "Unexpected token Token('LETTERS', 'Smith') at line 1, column 1.\nExpected one of: \n\t* AT\n\t* WS\n",
+      "new_tokens": 71
+    },
+    {
+      "prompt": "Generate one BibTeX inproceedings entry for a conference paper by Smith and Johnson.",
+      "mode": "constrained",
+      "output": "\n@InProceedings{Smith_2020_2021_2022,\nauthor=$Author$,\ntitle=$Title$,\njournal=$Journal$,\nvolume=$Volume$,\nnumber=$Number$,\naddress=$Address$,\ndate=$Date$,\nurl=$URL$,\ndoi=$doi$\n}",
+      "valid": true,
+      "error": null,
+      "new_tokens": 87
+    },
+    {
+      "prompt": "Generate one BibTeX book entry for Reinforcement Learning by Sutton and Barto.",
+      "mode": "unconstrained",
+      "output": "The book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:\n\n\"Reinforcement Learning: A Modern Approach\"\n\nThe book is:",
+      "valid": false,
+      "error": "Unexpected token Token('LETTERS', 'The') at line 1, column 1.\nExpected one of: \n\t* AT\n\t* WS\n",
+      "new_tokens": 256
+    },
+    {
+      "prompt": "Generate one BibTeX book entry for Reinforcement Learning by Sutton and Barto.",
+      "mode": "constrained",
+      "output": "@InformationalText\n\n{%END_INFORMATIONAL_TEXT%\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+      "valid": false,
+      "error": "Unexpected token Token('$END', '') at line 3, column 26.\nExpected one of: \n\t* COMMA\n",
+      "new_tokens": 256
+    }
+  ]
+}

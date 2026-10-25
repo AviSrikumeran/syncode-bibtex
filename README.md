@@ -3,6 +3,19 @@
 This repository implements the [UIUC ARC BibTeX assignment](https://github.com/uiuc-arc/syncode-bibtex)
 with a Lark LALR grammar, SynCode generation, and automated syntax tests.
 
+## Reviewer demonstration
+
+Read [REVIEWER.md](REVIEWER.md) for the experimental claim, alternatives,
+limitations, and reproduction procedure. After installation, run
+`.venv\Scripts\python.exe review_demo.py` and open `http://127.0.0.1:8765`.
+The local page shows real side-by-side model outputs, recorded next-token
+scores before and after SynCode masking, an editable Lark parser, and a button
+to perform a fresh model run.
+
+The fair comparison reports both raw-output syntax and syntax after removing
+only a surrounding Markdown fence. Three prompts demonstrate behavior; they
+are not a reliability benchmark or proof of factual citation accuracy.
+
 ## Run the implementation
 
 Use **Python 3.12**. On Windows, install the Microsoft Visual C++ x64 runtime
@@ -22,7 +35,7 @@ The model demonstration downloads approximately 1 GB on its first run.
 `RUN_DEMO.cmd` is an offline Windows launcher for an already prepared environment.
 
 Verified results: **7 supplied tests, 40 additional valid cases, 24 invalid
-cases, and 2 SynCode compatibility tests passed**. The final constrained
+cases, 2 SynCode compatibility tests, and 8 reviewer-demo tests passed** (81 total). The final constrained
 generation run produced **3/3 outputs that parsed successfully**. The supplied
 test harness has one documented correction: `bibTex` to `start`; all seven test
 bodies remain unchanged.

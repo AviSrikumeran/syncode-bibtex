@@ -1,11 +1,15 @@
 """Parse BibTeX examples and generate citations with the same grammar."""
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
 from importlib.metadata import version
 import json
 import os
 from pathlib import Path
+import platform
+import subprocess
+import time
 
 from lark import Lark, UnexpectedInput
 
@@ -55,7 +59,7 @@ def generate(parser, args):
     import torch
     os.environ.setdefault('SYNCODE_CACHE', (ROOT / '.cache' / 'syncode').as_posix() + '/')
     from syncode import Grammar, SyncodeLogitsProcessor
-    from transformers import AutoModelForCausalLM, AutoTokenizer, StoppingCriteria, StoppingCriteriaList
+    from transformers import AutoModelForCausalLM, AutoTokenizer, LogitsProcessor, StoppingCriteria, StoppingCriteriaList
 
     torch.manual_seed(args.seed)
     torch.set_num_threads(args.threads)
@@ -73,13 +77,42 @@ def generate(parser, args):
             text = tokenizer.decode(input_ids[0, self.prompt_length:], skip_special_tokens=True)
             return validate(parser, text)[0]
 
+    class TraceChoices(LogitsProcessor):
+        def __init__(self, prompt_length, constrainer):
+            self.prompt_length = prompt_length
+            self.constrainer = constrainer
+            self.steps = []
+
+        def __call__(self, input_ids, scores):
+            capture = len(self.steps) < args.trace_steps
+            if capture:
+                before = torch.topk(scores[0], k=5)
+                candidates = [dict(token_id=int(token), text=tokenizer.decode([int(token)]),
+                                   score=float(score)) for token, score in zip(before.indices, before.values)]
+            masked = self.constrainer(input_ids, scores) if self.constrainer else scores
+            if capture:
+                for candidate in candidates:
+                    candidate['allowed'] = bool(torch.isfinite(masked[0, candidate['token_id']]))
+                after = torch.topk(masked[0], k=5)
+                allowed = [dict(token_id=int(token), text=tokenizer.decode([int(token)]),
+                                score=float(score)) for token, score in zip(after.indices, after.values)
+                           if bool(torch.isfinite(score))]
+                self.steps.append(dict(
+                    step=len(self.steps) + 1,
+                    prefix=tokenizer.decode(input_ids[0, self.prompt_length:], skip_special_tokens=True),
+                    model_top_choices=candidates, allowed_top_choices=allowed,
+                    selected_token_id=int(masked[0].argmax()),
+                    selected_token=tokenizer.decode([int(masked[0].argmax())]),
+                ))
+            return masked
+
     print('Building SynCode token masks...', flush=True)
     processor = SyncodeLogitsProcessor(
         grammar=Grammar(GRAMMAR_PATH.read_text(encoding='utf-8')), tokenizer=tokenizer,
         parse_output_only=True, mode=args.mode, dev_mode=True,
     )
     records = []
-    for prompt in PROMPTS:
+    for prompt in args.prompts or PROMPTS:
         messages = [
             {'role': 'system', 'content': 'Return only one complete BibTeX citation. No explanation or Markdown. Keep fields short.'},
             {'role': 'user', 'content': prompt},
@@ -92,6 +125,10 @@ def generate(parser, args):
             if mode == 'constrained':
                 processor.reset()
                 processors = [processor]
+            trace = TraceChoices(inputs.input_ids.shape[1], processor if processors else None)
+            if args.trace_steps:
+                processors = [trace]
+            started = time.perf_counter()
             with torch.inference_mode():
                 output = model.generate(
                     **inputs, logits_processor=processors,
@@ -100,10 +137,20 @@ def generate(parser, args):
                     pad_token_id=tokenizer.eos_token_id,
                 )
             source = tokenizer.decode(output[0, inputs.input_ids.shape[1]:], skip_special_tokens=True)
+            token_ids = output[0, inputs.input_ids.shape[1]:].tolist()
+            trace_matches = all(step['selected_token_id'] == token_ids[index]
+                                for index, step in enumerate(trace.steps))
+            if not trace_matches:
+                raise RuntimeError('Recorded next-token choices do not match generated token IDs.')
             valid, error = validate(parser, source)
             print(f'\n{mode}: {prompt}\n{source}\nLark validation: {"PASS" if valid else "FAIL"}', flush=True)
             records.append(dict(prompt=prompt, mode=mode, output=source, valid=valid, error=error,
-                                new_tokens=output.shape[1] - inputs.input_ids.shape[1]))
+                                new_tokens=output.shape[1] - inputs.input_ids.shape[1],
+                                elapsed_seconds=round(time.perf_counter() - started, 3),
+                                rendered_prompt=rendered, token_trace=trace.steps,
+                                generated_token_ids=token_ids, trace_matches_output=trace_matches,
+                                termination='valid_citation' if valid else
+                                ('token_limit' if output.shape[1] - inputs.input_ids.shape[1] >= args.max_new_tokens else 'model_end')))
     return records, model.config._commit_hash
 
 
@@ -117,12 +164,24 @@ def main():
     cli.add_argument('--max-new-tokens', type=int, default=256)
     cli.add_argument('--seed', type=int, default=0)
     cli.add_argument('--threads', type=int, default=4)
+    cli.add_argument('--prompt', dest='prompts', action='append', help='Custom prompt; repeat for multiple prompts')
+    cli.add_argument('--trace-steps', type=int, default=0, choices=range(0, 33), metavar='0..32',
+                     help='Record actual next-token choices before and after masking')
     cli.add_argument('--output', type=Path, help='Save actual inputs, outputs, and validation results as JSON')
     args = cli.parse_args()
     parser = load_parser()
     examples = parsing_demo(parser)
     generations, revision = ([], None) if args.parse_only else generate(parser, args)
-    report = dict(model=None if args.parse_only else args.model, seed=args.seed, mode=args.mode,
+    try:
+        git_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    except (OSError, subprocess.CalledProcessError):
+        git_commit = None
+    report = dict(schema_version=2, created_at_utc=datetime.now(timezone.utc).isoformat(),
+                  model=None if args.parse_only else args.model, seed=args.seed, mode=args.mode,
+                  environment=dict(python=platform.python_version(), platform=platform.platform(),
+                                   device='cpu', dtype='float32', threads=args.threads),
+                  git_commit=git_commit, do_sample=False,
+                  source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                   revision=revision, grammar_sha256=hashlib.sha256(GRAMMAR_PATH.read_bytes()).hexdigest(),
                   versions={package: version(package) for package in ('lark',)} if args.parse_only else
                   {package: version(package) for package in ('lark', 'syncode', 'torch', 'transformers')},

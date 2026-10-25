@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BibTeX decoding lab · Reviewer demonstration</title>
+  <link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
+</head>
+<body>
+<header><a class="brand" href="/">B / <span>DECODING LAB</span></a><span class="eyebrow">BIBTEX · LARK · SYNCODE · QWEN</span></header>
+<main>
+  <section class="intro">
+    <div><p class="eyebrow">A REPRODUCIBLE REVIEWER DEMONSTRATION</p><h1>Good text.<br><em>Exact structure.</em></h1>
+    <p class="lede">An LLM proposes the words. A grammar defines the structure. This lab shows what changes when we connect them—and what doesn't.</p></div>
+    <aside><span class="small-label">THE QUESTION</span><p>Can a downstream program consume the model's response <em>exactly as returned</em>?</p><p class="muted">Explore real outputs, inspect actual token decisions, and test the parser yourself.</p></aside>
+  </section>
+  <nav aria-label="Demonstration sections">
+    <button class="active" data-tab="pipeline">01 / Components</button><button data-tab="comparison">02 / Evidence</button>
+    <button data-tab="tokens">03 / Token choices</button><button data-tab="parser">04 / Try the parser</button><button data-tab="reproduce">05 / Reproduce</button>
+  </nav>
+  <section id="pipeline" class="panel">
+    <div class="section-heading"><h2>One generation loop, four responsibilities.</h2><p>Click a component to inspect its job.</p></div>
+    <div class="pipeline" aria-label="Generation pipeline">
+      <button data-component="tokenizer"><span>01</span><strong>Tokenizer</strong><small>Text ↔ token IDs</small></button><b aria-hidden="true">→</b>
+      <button data-component="qwen"><span>02</span><strong>Qwen</strong><small>Scores next tokens</small></button><b aria-hidden="true">→</b>
+      <button data-component="syncode"><span>03</span><strong>SynCode + grammar</strong><small>Filters token choices</small></button><b aria-hidden="true">→</b>
+      <button data-component="lark"><span>04</span><strong>Lark</strong><small>Validates final text</small></button>
+    </div>
+    <p class="loop-note">Qwen → SynCode repeats for each generated token. Lark independently checks the completed response.</p>
+    <article class="explanation"><div><p class="eyebrow" id="component-label"></p><h3 id="component-title"></h3><p id="component-description"></p><p class="muted" id="component-limit"></p></div><pre><code id="component-example"></code></pre></article>
+    <div class="boundary"><strong>Three separate standards</strong><p><b>Syntax:</b> Does the text follow the grammar? <b>Task fit:</b> Does it answer the prompt? <b>Truth:</b> Does the publication actually exist? This implementation checks syntax.</p></div>
+  </section>
+  <section id="comparison" class="panel" hidden>
+    <div class="section-heading"><h2>Same model. Same prompt. Different decoding.</h2><p>These are real outputs, independently revalidated by Lark.</p></div>
+    <div class="toolbar"><label>Prompt <select id="prompt-select" aria-label="Choose a comparison prompt"></select></label><button id="live-run" class="primary">Run Qwen again locally</button></div>
+    <p id="evidence-label" class="muted" aria-live="polite"></p><p id="selected-prompt" class="prompt"></p>
+    <div class="outputs"><article><div class="output-heading"><h3>Qwen alone</h3><span id="unconstrained-badge" class="badge"></span></div><pre><code id="unconstrained-output"></code></pre><p id="unconstrained-assessment"></p></article>
+    <article><div class="output-heading"><h3>Qwen + SynCode</h3><span id="constrained-badge" class="badge"></span></div><pre><code id="constrained-output"></code></pre><p id="constrained-assessment"></p></article></div>
+    <div class="boundary"><strong>Don't overclaim the result.</strong><p id="comparison-summary"></p><p>In the original run, the LLM-security prompt produced a constrained title about <b>LSTM</b> security. Valid syntax did not ensure task fit. The publication details have not been fact-checked.</p></div>
+    <details><summary>Live run progress and logs</summary><pre id="live-log" aria-live="polite">No live run started in this browser session.</pre></details>
+  </section>
+  <section id="tokens" class="panel" hidden>
+    <div class="section-heading"><h2>Watch the next-token decision.</h2><p>Actual model scores and SynCode masks—not hidden reasoning or an animation of invented data.</p></div>
+    <div class="toolbar"><label>Prompt <select id="trace-prompt"></select></label><label>Step <input id="trace-step" type="range" min="1" max="8" value="1"><output id="step-label">1</output></label></div>
+    <p class="small-label">GENERATED PREFIX BEFORE THIS DECISION</p><pre><code id="trace-prefix"></code></pre>
+    <div class="token-layout"><article><h3>Qwen's top five candidates</h3><table><thead><tr><th>Token text</th><th>Score</th><th>SynCode</th></tr></thead><tbody id="token-candidates"></tbody></table></article>
+    <article><h3>After applying the mask</h3><table><thead><tr><th>Token text</th><th>Score</th></tr></thead><tbody id="token-allowed"></tbody></table><p class="selection">Chosen token <code id="selected-token"></code></p></article></div>
+    <p class="muted">Scores are processed logits at the SynCode boundary, after built-in Hugging Face processors such as repetition penalties. They are not probabilities. Greedy decoding chooses the highest remaining score. “Allowed” means permitted by SynCode's mask at this step; final validation still matters in grammar_mask mode.</p>
+  </section>
+  <section id="parser" class="panel" hidden>
+    <div class="section-heading"><h2>Break a citation. See exactly what fails.</h2><p>This editor calls the real Lark parser running locally.</p></div>
+    <div class="toolbar"><button data-example="nested">Nested braces</button><button data-example="broken">Missing closing brace</button><button data-example="empty">Empty value</button><button data-example="semantic">Fake publication, valid syntax</button></div>
+    <label class="small-label" for="bibtex-input">BIBTEX INPUT</label><textarea id="bibtex-input" rows="8" spellcheck="false"></textarea>
+    <div class="toolbar"><button id="validate" class="primary">Validate with Lark</button><span id="validation-status" role="status"></span></div>
+    <pre><code id="validation-detail">Choose an example or edit the text, then validate.</code></pre>
+  </section>
+  <section id="reproduce" class="panel" hidden>
+    <div class="section-heading"><h2>Evidence another person can rerun.</h2><p>No invented success counts. No hidden output repair.</p></div>
+    <dl id="provenance"></dl>
+    <h3>Reproduce the recorded experiment</h3><pre><code>git clone --branch reviewer-demo https://github.com/AviSrikumeran/syncode-bibtex.git
+cd syncode-bibtex
+py -3.12 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
+.venv\Scripts\python.exe run_tests.py
+.venv\Scripts\python.exe bibtex_syncode.py --compare --trace-steps 8 --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output results/reproduction.json
+.venv\Scripts\python.exe review_demo.py</code></pre>
+    <p>Windows / Python 3.12 is the verified environment. On macOS/Linux, use <code>python3.12</code> and <code>.venv/bin/python</code>; those platforms have not been verified here. The model downloads about 1 GB the first time. Windows may require Microsoft's Visual C++ x64 runtime.</p>
+    <h3>What a reviewer should challenge</h3><ul><li>Does accepting the seven assignment examples also reject malformed syntax?</li><li>Does the comparison measure raw output format, extracted citation syntax, or factual correctness?</li><li>Can the model finish before its token limit? Can the selected grammar mode block otherwise useful tokens?</li><li>Does the experiment generalize beyond three prompts? This run alone does not establish that.</li></ul>
+    <p class="sources">Primary references: <a href="https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct" target="_blank" rel="noreferrer">Qwen model card</a> · <a href="https://github.com/structuredllm/syncode" target="_blank" rel="noreferrer">SynCode</a> · <a href="https://lark-parser.readthedocs.io/en/stable/grammar.html" target="_blank" rel="noreferrer">Lark grammar reference</a></p>
+  </section>
+  <footer><span>LOCAL REVIEWER LAB · REAL MODEL OUTPUTS</span><span>Syntax is necessary for a parser. It is not sufficient for a trustworthy citation.</span></footer>
+</main>
+</body></html>

@@ -4,7 +4,7 @@ My solution to the [UIUC ARC BibTeX assignment](https://github.com/uiuc-arc/sync
 
 **[Open the project website](https://avisrikumeran.github.io/syncode-bibtex/)** — inspect the grammar, recorded test results, three-prompt comparison, and captured token choices without installing anything.
 
-The public website displays **recorded evidence**. The local Python console additionally validates new input, executes cases, and runs fresh Qwen inference. GitHub Pages does not execute the Python backend or the model.
+The public website displays **recorded evaluation evidence** and lets you edit citations and validate them with **real Lark running in the browser** through Pyodide. The first validation downloads the browser runtime and Lark 1.2.2. The local Python console additionally executes test groups and runs fresh Qwen inference. GitHub Pages does not run Qwen or the Python server.
 
 ## What my solution does
 

@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>BibTeX evaluation console</title>
-  <link rel="stylesheet" href="./styles.css?v=0b8c5aef418c"><script src="./app.js?v=d20679febd44" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=0b8c5aef418c"><script src="./app.js?v=1b5d2efda342" defer></script>
 </head>
 <body>
-<header><h1>BibTeX evaluation console</h1><p>Avinash · Computer science junior, University of Illinois</p><p>Published evidence viewer. Results are recorded; fresh parsing and Qwen generation run in the local Python demo. See Reproduce.</p></header>
-<p><strong>Recording guide v3 · PUBLIC SAVED EVIDENCE — use the local Python demo for fresh execution.</strong></p>
+<header><h1>BibTeX evaluation console</h1><p>Avinash · Computer science junior, University of Illinois</p><p>Edit and validate citations with Lark in your browser. Model comparisons and test-group results are recorded; fresh Qwen generation runs locally.</p></header>
+<p><strong>Recording guide v3 · PUBLIC SITE — live Lark validation and recorded model evidence.</strong></p>
 <main>
   <nav aria-label="Demonstration sections">
     <button class="active" data-tab="pipeline">1. Overview</button><button data-tab="grammar">2. Grammar rules</button><button data-tab="parser">3. Try a citation</button>
@@ -78,7 +78,7 @@
     <p><code>book</code> is the entry type; <code>rivera2025</code> is its citation key. Fields use <code>name = value</code> and commas separate them. The title contains an inner braced group around AI, which can protect its capitalization in BibTeX. This parser recognizes the structure; it does not typeset the bibliography.</p>
     <pre><code>braced: "{" (text | "\&quot;" | braced)* "}"</code></pre>
     <p>The braced rule refers to itself, allowing nested groups. Paste the example below and predict acceptance. Remove the entry's final closing brace and predict rejection. Changing the year to another number still passes syntax validation.</p>
-    <div class="section-heading"><h2>Validate BibTeX input</h2><p>Examples can be inspected here. Execute the local demo to validate new text.</p></div>
+    <div class="section-heading"><h2>Validate BibTeX input</h2><p>Edit this input and validate with real Lark in your browser. The first validation downloads Python and Lark; later validations reuse them. Maximum input: 20,000 characters.</p></div>
     <div class="toolbar"><button data-example="nested">Nested braces</button><button data-example="broken">Missing closing brace</button><button data-example="empty">Empty value</button><button data-example="semantic">Fake publication, valid syntax</button></div>
     <label class="small-label" for="bibtex-input">BIBTEX INPUT</label><textarea id="bibtex-input" rows="8" spellcheck="false"></textarea>
     <div class="toolbar"><button id="validate" class="primary">Validate with Lark</button><span id="validation-status" role="status"></span></div>

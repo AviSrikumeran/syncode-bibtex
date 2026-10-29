@@ -1,11 +1,46 @@
 const $ = id => document.getElementById(id);
 const recordedSite = document.documentElement.dataset.mode === 'recorded';
+let browserParserReady;
+let parserWorker;
+let parserRequestId = 0;
+const parserRequests = new Map();
+function workerRequest(action, values) {
+  return new Promise((resolve, reject) => {
+    const id = ++parserRequestId;
+    const timer = setTimeout(() => { parserRequests.delete(id); reject(Error('Lark loading timed out. Check the connection and retry.')); }, 120000);
+    parserRequests.set(id, {resolve, reject, timer});
+    parserWorker.postMessage({id, action, ...values});
+  });
+}
+async function ensureBrowserParser() {
+  if (!browserParserReady) browserParserReady = (async () => {
+    parserWorker = new Worker(new URL('./browser-parser-worker.js?v=1', document.baseURI));
+    parserWorker.onmessage = ({data}) => {
+      const pending = parserRequests.get(data.id); if (!pending) return;
+      clearTimeout(pending.timer); parserRequests.delete(data.id);
+      if (data.error) pending.reject(Error(data.error)); else pending.resolve(data.result);
+    };
+    parserWorker.onerror = () => {
+      for (const pending of parserRequests.values()) { clearTimeout(pending.timer); pending.reject(Error('Could not load browser Lark. Check the internet connection and retry.')); }
+      parserRequests.clear();
+    };
+    const response = await fetch('./data/grammar.json');
+    if (!response.ok) throw Error('Could not load the BibTeX grammar.');
+    return workerRequest('init', {grammar: (await response.json()).source});
+  })().catch(error => { if (parserWorker) parserWorker.terminate(); browserParserReady = null; throw error; });
+  return browserParserReady;
+}
 async function apiFetch(path, options = {}) {
   if (!recordedSite) return fetch(path, options);
   if (!options.method || options.method === 'GET') {
     return fetch(`./data/${path.split('/').pop()}.json`);
   }
   const payload = JSON.parse(options.body || '{}');
+  if (path === '/api/validate') {
+    await ensureBrowserParser();
+    const result = await workerRequest('validate', {source: payload.source});
+    return {ok: true, json: async () => result};
+  }
   const response = await fetch('./data/results.json');
   const results = await response.json();
   if (path === '/api/run-case') return {ok: true, json: async () => results.find(item => item.case_id === payload.case_id)};
@@ -172,24 +207,21 @@ const examples = {
 };
 document.querySelectorAll('[data-example]').forEach(button => button.onclick = async () => {
   $('bibtex-input').value = examples[button.dataset.example];
-  if (!recordedSite) { $('validate').click(); return; }
-  try {
-    const response = await apiFetch('/api/examples');
-    if (!response.ok) throw Error('Could not load saved example results.');
-    const record = (await response.json())[button.dataset.example];
-    $('bibtex-input').value = record.source;
-    $('validation-status').textContent = 'Recorded example result: ' + (record.raw_valid ? 'accepted by Lark' : 'rejected by Lark');
-    $('validation-detail').textContent = record.raw_valid ? record.tree : record.raw_error;
-  } catch (error) { $('validation-status').textContent = error.message; }
+  $('validate').click();
 });
 $('validate').onclick = async () => {
+  const source = $('bibtex-input').value;
+  $('validate').disabled = true;
+  $('validation-status').textContent = recordedSite ? 'Loading or running Lark in this browser… First load needs an internet connection.' : 'Validating…';
   try {
-    const response = await apiFetch('/api/validate', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({source: $('bibtex-input').value})});
+    const response = await apiFetch('/api/validate', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({source})});
     const value = await response.json(); if (!response.ok) throw Error(value.error);
-    $('validation-status').textContent = value.raw_valid ? 'Accepted by Lark' : 'Rejected by Lark';
+    if ($('bibtex-input').value !== source) { $('validation-status').textContent = 'Input changed during validation. Click Validate with Lark again.'; return; }
+    $('validation-status').textContent = (value.raw_valid ? 'Accepted by Lark' : 'Rejected by Lark') + (recordedSite ? ' · executed in this browser' : '');
     $('validation-status').className = value.raw_valid ? 'success-text' : 'failure-text';
     $('validation-detail').textContent = value.raw_valid ? value.tree : value.raw_error;
   } catch (error) { $('validation-status').textContent = error.message; }
+  finally { $('validate').disabled = false; }
 };
 async function pollRun() {
   try {
@@ -330,11 +362,7 @@ if (recordedSite) {
   $('edited-case-controls').hidden = true;
   $('live-run').hidden = true;
   $('run-status').textContent = 'Published evidence viewer. Fresh Qwen generation requires the local setup in Reproduce.';
-  $('validate').disabled = true;
-  $('validate').hidden = true;
-  $('bibtex-input').readOnly = true;
-  $('use-citation').hidden = true;
-  $('validation-status').textContent = 'Choose an example to see its saved validation result. New input can be tested in the local demo.';
+  $('validation-status').textContent = 'Edit the citation and validate with real Lark in your browser. The first validation downloads the parser runtime.';
   $('run-edited-case').hidden = true;
   $('run-original-case').textContent = 'Show saved case result';
   $('run-case-group').textContent = 'Show saved group results';

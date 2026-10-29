@@ -51,7 +51,7 @@ def build():
     html = (ROOT / 'reviewer/index.html').read_text(encoding='utf-8')
     html = html.replace('<html lang="en">', '<html lang="en" data-mode="recorded">')
     html = html.replace('Recording guide v3 · LIVE LOCAL DEMO — use this page for your recording.',
-                        'Recording guide v3 · PUBLIC SAVED EVIDENCE — use the local Python demo for fresh execution.')
+                        'Recording guide v3 · PUBLIC SITE — live Lark validation and recorded model evidence.')
     html = html.replace('Start here in PowerShell on this PC', 'Start here on a new machine')
     html = html.replace('Copy this command into PowerShell. Keep that window open for the remaining commands.',
                         'On the prepared Windows recording PC, copy this command into PowerShell. Other machines should follow Reproduce.')
@@ -61,13 +61,13 @@ def build():
     script_version = hashlib.sha256((ROOT / 'reviewer/app.js').read_bytes()).hexdigest()[:12]
     html = html.replace('href="/styles.css"', f'href="./styles.css?v={style_version}"').replace('src="/app.js"', f'src="./app.js?v={script_version}"')
     html = html.replace('Local execution. Recorded evidence is labeled. Publication facts are not verified.',
-                        'Published evidence viewer. Results are recorded; fresh parsing and Qwen generation run in the local Python demo. See Reproduce.')
+                        'Edit and validate citations with Lark in your browser. Model comparisons and test-group results are recorded; fresh Qwen generation runs locally.')
     html = html.replace('read directly from the local project', 'exported from the project')
     html = html.replace('Click <b>Run all 3 prompts locally</b> for fresh inference, then use <b>Show outputs</b> for each request.',
                         'Use <b>Show outputs</b> for each recorded request. To generate new results, follow Reproduce on your own machine.')
     html = html.replace('The local run button performs new inference;', 'The local Python demo performs new inference;')
     html = html.replace('This editor calls the local Lark parser. Maximum request: 20,000 characters.',
-                        'Examples can be inspected here. Execute the local demo to validate new text.')
+                        'Edit this input and validate with real Lark in your browser. The first validation downloads Python and Lark; later validations reuse them. Maximum input: 20,000 characters.')
     html = html.replace('Run saved case', 'Show saved case result').replace('Run all saved cases in selected group', 'Show saved group results')
     html = html.replace('Run edited input', 'Local editing only')
     html = html.replace('Run selected group', 'Show saved group results')
@@ -83,7 +83,7 @@ def build():
     html = html.replace('choose another group, inspect its expected acceptance or rejection, and run one fixture.',
                         'choose another group and inspect its expected acceptance or rejection and saved result.')
     (target / 'index.html').write_text(html, encoding='utf-8')
-    for name in ('app.js', 'styles.css'):
+    for name in ('app.js', 'styles.css', 'browser-parser-worker.js'):
         (target / name).write_bytes((ROOT / 'reviewer' / name).read_bytes())
     (target / '.nojekyll').write_text('', encoding='utf-8')
     (data / 'manifest.json').write_text(json.dumps(dict(exported_at_utc=datetime.now(timezone.utc).isoformat(),

@@ -40,11 +40,11 @@
   </section>
   <section id="comparison" class="panel" hidden>
     <h2>Generate citations from three different prompts</h2>
+    <h3>Run from PowerShell</h3><p>Run from the repository folder. This uses the downloaded model and prints all six generations in your terminal.</p><pre data-copy-commands><code>$env:HF_HUB_OFFLINE = '1'
+.\.venv\Scripts\python.exe bibtex_syncode.py --compare --trace-steps 8 --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output results/video-comparison.json</code></pre>
     <p><b>One run compares all three prompts twice:</b> Qwen alone, then the same Qwen with SynCode. That makes six generations. No manual typing is required.</p>
     <p>First inspect the requests below. Click <b>Run all 3 prompts locally</b> for fresh inference, then use <b>Show outputs</b> for each request. Initial results are saved evidence, not a new run. Generation can take several minutes.</p>
     <table><thead><tr><th>Request</th><th>Qwen alone</th><th>With SynCode</th><th>Inspect</th></tr></thead><tbody id="prompt-overview"></tbody></table>
-    <details><summary>Run the same three-prompt comparison from PowerShell</summary><p>Run from the repository folder. Uses downloaded model files and saves new evidence.</p><pre data-copy-commands><code>$env:HF_HUB_OFFLINE = '1'
-.\.venv\Scripts\python.exe bibtex_syncode.py --compare --trace-steps 8 --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output results/video-comparison.json</code></pre></details>
     <div class="section-heading"><h2>Constrained and unconstrained generation</h2><p>Same model and prompt. Raw outputs independently revalidated by Lark.</p></div>
     <div class="toolbar"><button id="live-run" class="primary">Run all 3 prompts locally</button><label>View results for <select id="prompt-select" aria-label="Choose a comparison prompt"></select></label></div>
     <p id="run-status" role="status">No fresh run started in this session.</p>
@@ -52,7 +52,7 @@
     <div class="outputs"><article><div class="output-heading"><h3>Qwen alone</h3><span id="unconstrained-badge" class="badge"></span></div><pre><code id="unconstrained-output"></code></pre><p id="unconstrained-assessment"></p></article>
     <article><div class="output-heading"><h3>Qwen + SynCode</h3><span id="constrained-badge" class="badge"></span></div><pre><code id="constrained-output"></code></pre><p id="constrained-assessment"></p></article></div>
     <div class="boundary"><strong>Observed results</strong><p id="comparison-summary"></p><p>Compare the raw parser result with the result after removing only an outer Markdown fence. Citation facts are not checked by this parser.</p></div>
-    <details><summary>Live run progress and logs</summary><pre id="live-log" aria-live="polite">No live run started in this browser session.</pre></details>
+    <pre id="live-log" hidden></pre>
   </section>
   <section id="tokens" class="panel" hidden>
     <p><b>Walkthrough:</b> Start at step one. Compare a Markdown-fence candidate with <code>@</code>, inspect which choices the mask permits, then move to a later step. These are captured decisions from the selected generation, not a live stream.</p>

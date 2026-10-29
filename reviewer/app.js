@@ -152,7 +152,18 @@ const examples = {
   empty: '@misc{empty,\n  title = {},\n  note = ""\n}',
   semantic: '@article{invented,\n  author = {Imaginary Researcher},\n  title = {A Made-Up Paper in a Nonexistent Journal},\n  journal = {This Journal Does Not Exist},\n  year = 9999\n}'
 };
-document.querySelectorAll('[data-example]').forEach(button => button.onclick = () => { $('bibtex-input').value = examples[button.dataset.example]; if (!recordedSite) $('validate').click(); });
+document.querySelectorAll('[data-example]').forEach(button => button.onclick = async () => {
+  $('bibtex-input').value = examples[button.dataset.example];
+  if (!recordedSite) { $('validate').click(); return; }
+  try {
+    const response = await apiFetch('/api/examples');
+    if (!response.ok) throw Error('Could not load saved example results.');
+    const record = (await response.json())[button.dataset.example];
+    $('bibtex-input').value = record.source;
+    $('validation-status').textContent = 'Recorded example result: ' + (record.raw_valid ? 'accepted by Lark' : 'rejected by Lark');
+    $('validation-detail').textContent = record.raw_valid ? record.tree : record.raw_error;
+  } catch (error) { $('validation-status').textContent = error.message; }
+});
 $('validate').onclick = async () => {
   try {
     const response = await apiFetch('/api/validate', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({source: $('bibtex-input').value})});
@@ -301,7 +312,10 @@ if (recordedSite) {
   $('live-run').hidden = true;
   $('run-status').textContent = 'Published evidence viewer. Fresh Qwen generation requires the local setup in Reproduce.';
   $('validate').disabled = true;
-  $('validation-status').textContent = 'Live validation is available in the local Python demo.';
+  $('validate').hidden = true;
+  $('bibtex-input').readOnly = true;
+  $('use-citation').hidden = true;
+  $('validation-status').textContent = 'Choose an example to see its saved validation result. New input can be tested in the local demo.';
   $('run-edited-case').hidden = true;
   $('run-original-case').textContent = 'Show saved case result';
   $('run-case-group').textContent = 'Show saved group results';

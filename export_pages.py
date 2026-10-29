@@ -1,13 +1,16 @@
 """Build a GitHub Pages evidence viewer; model execution stays local."""
 from datetime import datetime, timezone
+import ast
 import hashlib
 import json
+import re
 from pathlib import Path
 from types import SimpleNamespace
 
 from bibtex_syncode import ROOT, GRAMMAR_PATH, load_parser
 from review_demo import CASE_GROUPS, REQUIREMENTS, ReviewServer, cases, evidence, provided_cases
 from review_demo import case_requirements
+from review_demo import analyze_output, tree_preview
 
 
 def build():
@@ -16,6 +19,13 @@ def build():
     data.mkdir(parents=True, exist_ok=True)
     parser = load_parser()
     grammar_hash = hashlib.sha256(GRAMMAR_PATH.read_bytes()).hexdigest()
+    example_block = (ROOT / 'reviewer/app.js').read_text(encoding='utf-8').split('const examples = {', 1)[1].split('\n};', 1)[0]
+    examples = {}
+    for name, literal in re.findall(r"(\w+): ('(?:\\.|[^'\\])*')", example_block):
+        source = ast.literal_eval(literal)
+        assessment = analyze_output(parser, source)
+        examples[name] = dict(assessment, source=source,
+                              tree=tree_preview(parser.parse(source)) if assessment['raw_valid'] else None)
     catalog, results = [], []
     for category, name, source, expected in (*provided_cases(), *cases()):
         fixture = dict(case_id=category + '/' + name, category=category, name=name,
@@ -34,6 +44,7 @@ def build():
                        active_grammar_sha256=grammar_hash),
         'cases': dict(cases=catalog, groups=CASE_GROUPS, requirements=REQUIREMENTS),
         'results': results,
+        'examples': examples,
     }
     for name, payload in payloads.items():
         (data / (name + '.json')).write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')

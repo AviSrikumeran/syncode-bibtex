@@ -125,10 +125,11 @@ cd syncode-bibtex
 py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements-lock.txt
 .venv\Scripts\python.exe run_tests.py
-.venv\Scripts\python.exe evaluate_bounds.py
-.venv\Scripts\python.exe terminal_demo.py --offline
 .venv\Scripts\python.exe bibtex_syncode.py --compare --trace-steps 8 --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output results/reproduction.json
-.venv\Scripts\python.exe review_demo.py</code></pre>
+.venv\Scripts\python.exe evaluate_bounds.py
+.venv\Scripts\python.exe review_demo.py --offline</code></pre>
+    <p>The first comparison downloads the model. After that, the local console can run offline. Open <code>http://127.0.0.1:8765/</code> when the server starts.</p>
+    <details><summary>Optional independent terminal menu</summary><p>After downloading the model, run this in a separate terminal in the repository. Choose 0 to exit the menu.</p><pre data-copy-commands><code>.\.venv\Scripts\python.exe terminal_demo.py --offline</code></pre></details>
     <p>Windows / Python 3.12 is the verified environment. On macOS/Linux, use <code>python3.12</code> and <code>.venv/bin/python</code>; those platforms have not been verified here. The model downloads about 1 GB the first time. Windows may require Microsoft's Visual C++ x64 runtime.</p>
     <p class="sources">Primary references: <a href="https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct" target="_blank" rel="noreferrer">Qwen model card</a> · <a href="https://github.com/structuredllm/syncode" target="_blank" rel="noreferrer">SynCode</a> · <a href="https://lark-parser.readthedocs.io/en/stable/grammar.html" target="_blank" rel="noreferrer">Lark grammar reference</a></p>
   </section>

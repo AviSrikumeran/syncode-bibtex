@@ -84,25 +84,19 @@ function renderComparison() {
   const constrained = recordFor(index, 'constrained');
   const kind = /inproceedings|conference/i.test(request) ? 'conference paper' : /book/i.test(request) ? 'book' : 'article';
   const entryType = kind === 'conference paper' ? '@inproceedings' : kind === 'book' ? '@book' : '@article';
-  const introduction = kind === 'conference paper'
-    ? 'This prompt asks for a conference paper by Smith and Johnson. A paper in conference proceedings normally uses @inproceedings.'
-    : kind === 'book'
-      ? 'This prompt asks for a book citation for Reinforcement Learning by Sutton and Barto. The expected entry type is @book.'
-      : 'This prompt asks for an article about LLM security. The expected entry type is @article.';
-  const explanation = [introduction, 'I compare the same Qwen model and prompt, first without grammar constraints and then with SynCode.'];
+  const explanation = ['Requested entry: ' + entryType + '. Same Qwen model and prompt in both runs.'];
   if (baseline) {
-    if (baseline.assessment.fence_removed) {
-      explanation.push('Qwen alone included Markdown fences around the citation. Its raw response ' +
-        (baseline.assessment.raw_valid ? 'passes' : 'fails') + ' parsing. Removing only those outer fences ' +
-        (baseline.assessment.extracted_valid ? 'makes the citation parse.' : 'still leaves a citation that does not parse.'));
-    } else explanation.push('The unconstrained raw response ' + (baseline.assessment.raw_valid ? 'parses successfully.' : 'does not parse.'));
+    explanation.push('Qwen alone: raw output ' + (baseline.assessment.raw_valid ? 'parses.' : 'does not parse.') +
+      (baseline.assessment.fence_removed ? ' Outer Markdown fences are present; removing them ' + (baseline.assessment.extracted_valid ? 'makes the citation parse.' : 'does not fix the syntax.') : ''));
   }
-  if (constrained) explanation.push('With SynCode, token choices are filtered during generation. This constrained response ' +
-    (constrained.assessment.raw_valid ? 'parses directly under my grammar.' : 'does not parse, so the constraints did not produce a complete valid result in this run.'));
+  if (constrained) explanation.push('Qwen + SynCode: token choices are filtered during generation; the raw output ' +
+    (constrained.assessment.raw_valid ? 'parses directly.' : 'does not parse in this run.'));
   if (kind === 'article' && /LSTM/i.test(constrained?.output || '') && /LLM/i.test(request))
-    explanation.push('Notice that the constrained title says LSTM rather than LLM. It passes the grammar but misses the requested topic.');
-  explanation.push('The requested type is ' + entryType + ', but parsing alone does not establish publication facts or complete prompt compliance.');
-  $('prompt-explanation').textContent = explanation.join(' ');
+    explanation.push('Content mismatch: the constrained title says LSTM, while the request says LLM.');
+  explanation.push('Parsing checks citation structure, not publication facts.');
+  $('prompt-explanation').replaceChildren(...explanation.map(text => {
+    const item = document.createElement('li'); item.textContent = text; return item;
+  }));
   for (const mode of ['unconstrained', 'constrained']) {
     const record = recordFor(index, mode);
     $(mode + '-output').textContent = record?.output || 'No output in this evidence file.';

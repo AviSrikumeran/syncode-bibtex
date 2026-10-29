@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>BibTeX evaluation console</title>
-  <link rel="stylesheet" href="./styles.css?v=0b8c5aef418c"><script src="./app.js?v=2fa0a0ef2091" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=0b8c5aef418c"><script src="./app.js?v=d20679febd44" defer></script>
 </head>
 <body>
 <header><h1>BibTeX evaluation console</h1><p>Avinash · Computer science junior, University of Illinois</p><p>Published evidence viewer. Results are recorded; fresh parsing and Qwen generation run in the local Python demo. See Reproduce.</p></header>
@@ -52,7 +52,7 @@
     <div class="toolbar"><button id="live-run" class="primary">Run all 3 prompts locally</button><label>View results for <select id="prompt-select" aria-label="Choose a comparison prompt"></select></label></div>
     <p id="run-status" role="status">No fresh run started in this session.</p>
     <p id="evidence-label" class="muted" aria-live="polite"></p><p id="selected-prompt" class="prompt"></p>
-    <h3>What to say for this prompt</h3><p id="prompt-explanation" aria-live="polite"></p>
+    <h3>Analysis</h3><ul id="prompt-explanation" aria-live="polite"></ul>
     <div class="outputs"><article><div class="output-heading"><h3>Qwen alone</h3><span id="unconstrained-badge" class="badge"></span></div><pre><code id="unconstrained-output"></code></pre><p id="unconstrained-assessment"></p></article>
     <article><div class="output-heading"><h3>Qwen + SynCode</h3><span id="constrained-badge" class="badge"></span></div><pre><code id="constrained-output"></code></pre><p id="constrained-assessment"></p></article></div>
     <div class="boundary"><strong>Observed results</strong><p id="comparison-summary"></p><p>Compare the raw parser result with the result after removing only an outer Markdown fence. Citation facts are not checked by this parser.</p></div>

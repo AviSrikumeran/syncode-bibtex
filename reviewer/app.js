@@ -1,6 +1,61 @@
 const $ = id => document.getElementById(id);
+const recordedSite = document.documentElement.dataset.mode === 'recorded';
+async function apiFetch(path, options = {}) {
+  if (!recordedSite) return fetch(path, options);
+  if (!options.method || options.method === 'GET') {
+    return fetch(`./data/${path.split('/').pop()}.json`);
+  }
+  const payload = JSON.parse(options.body || '{}');
+  const response = await fetch('./data/results.json');
+  const results = await response.json();
+  if (path === '/api/run-case') return {ok: true, json: async () => results.find(item => item.case_id === payload.case_id)};
+  if (path === '/api/run-group') {
+    const rows = results.filter(item => payload.group === '*' || item.category === payload.group);
+    return {ok: true, json: async () => ({results: rows, total: rows.length, matched: rows.filter(item => item.matched_expectation).length})};
+  }
+  throw Error('Fresh parsing and generation require the local Python demo. See Reproduce.');
+}
+document.querySelectorAll('pre[data-copy-commands]').forEach(block => {
+  const controls = document.createElement('div'); controls.className = 'toolbar';
+  const commands = block.textContent.trim().split(/\r?\n/).filter(line => line.trim());
+  const status = document.createElement('span'); status.setAttribute('role', 'status');
+  [block.textContent.trim()].forEach((command, index) => {
+    const button = document.createElement('button');
+    button.textContent = commands.length === 1 ? 'Copy command' : 'Copy all commands';
+    button.title = command;
+    button.onclick = async () => {
+      try { await navigator.clipboard.writeText(command); status.textContent = 'Commands copied.'; }
+      catch (error) { status.textContent = 'Clipboard unavailable. Select the command and press Ctrl+C.'; }
+    };
+    controls.append(button);
+  });
+  controls.append(status); block.after(controls);
+});
+$('copy-citation').onclick = async () => {
+  try {
+    await navigator.clipboard.writeText($('walkthrough-citation').textContent);
+    $('copy-citation-status').textContent = 'Citation copied.';
+  } catch (error) {
+    $('copy-citation-status').textContent = 'Clipboard unavailable. Select the example text and press Ctrl+C, or use Load into validator.';
+  }
+};
+$('use-citation').onclick = () => {
+  $('bibtex-input').value = $('walkthrough-citation').textContent;
+  $('validation-status').textContent = '';
+  $('validation-detail').textContent = 'Example loaded. Predict the result, then click Validate with Lark.';
+  $('bibtex-input').focus();
+};
 let report;
 let prompts = [];
+apiFetch('/api/grammar').then(async response => {
+  const value = await response.json(); if (!response.ok) throw Error(value.error || 'Could not load grammar.');
+  $('grammar-source').textContent = value.source;
+  $('copy-grammar').disabled = false;
+}).catch(error => { $('grammar-source').textContent = error.message; });
+$('copy-grammar').onclick = async () => {
+  try { await navigator.clipboard.writeText($('grammar-source').textContent); $('grammar-copy-status').textContent = 'Grammar copied.'; }
+  catch (error) { $('grammar-copy-status').textContent = 'Select the grammar text and press Ctrl+C.'; }
+};
 const components = {
   tokenizer: ['TEXT INTO MODEL INPUT', 'A token is a piece of text, not always a word.', 'The tokenizer converts the prompt into token IDs and converts generated IDs back into text. A single token can span punctuation and letters, so grammar constraints must operate correctly across token boundaries.', 'The tokenizer does not know whether a paper exists or a citation is valid.', 'Prompt text → [token IDs] → Qwen\nGenerated IDs → text'],
   qwen: ['THE LANGUAGE MODEL', 'Qwen scores what could come next.', 'We use Qwen2.5-0.5B-Instruct on the CPU. For each step it produces a score for each possible next token. Greedy decoding chooses the highest remaining score. The same model and prompts are used in both comparison arms.', 'A likely token is not necessarily structurally valid, relevant, or factually true.', 'Prompt + generated prefix\n        ↓\nScores for the next token\n        ↓\nChoose highest score'],
@@ -39,7 +94,7 @@ function renderComparison() {
     const records = report.generations.filter(record => record.mode === mode);
     return `${records.filter(record => record.assessment.raw_valid).length}/${records.length} raw; ${records.filter(record => record.assessment.extracted_valid).length}/${records.length} after fence removal`;
   };
-  $('comparison-summary').textContent = `Qwen alone: ${counts('unconstrained')}. Qwen + SynCode: ${counts('constrained')}. Three prompts demonstrate behavior; they do not establish a general reliability rate or that SynCode is always necessary. A fence extractor is a simpler alternative for these particular baseline failures.`;
+  $('comparison-summary').textContent = `Qwen alone: ${counts('unconstrained')}. Qwen + SynCode: ${counts('constrained')}. These results describe the selected prompts and settings.`;
 }
 function renderTrace() {
   const record = recordFor(Number($('trace-prompt').value || 0), 'constrained');
@@ -61,6 +116,17 @@ function renderTrace() {
 }
 function loadReport(value, label) {
   report = value; prompts = [...new Set(report.generations.map(record => record.prompt))];
+  $('prompt-overview').replaceChildren();
+  prompts.forEach((prompt, index) => {
+    const row = document.createElement('tr'); cell(row, prompt);
+    for (const mode of ['unconstrained', 'constrained']) {
+      const record = recordFor(index, mode);
+      cell(row, record ? (record.assessment.raw_valid ? 'Raw text parses' : 'Raw text does not parse') : 'No result');
+    }
+    const button = document.createElement('button'); button.textContent = 'Show outputs';
+    button.onclick = () => { $('prompt-select').value = String(index); renderComparison(); $('selected-prompt').scrollIntoView({block: 'nearest'}); };
+    const action = document.createElement('td'); action.append(button); row.append(action); $('prompt-overview').append(row);
+  });
   for (const id of ['prompt-select', 'trace-prompt']) {
     $(id).replaceChildren(...prompts.map((prompt, index) => { const option = document.createElement('option'); option.value = index; option.textContent = `${index + 1}. ${['Article', 'Conference paper', 'Book'][index] || 'Custom prompt'}`; return option; }));
   }
@@ -86,10 +152,10 @@ const examples = {
   empty: '@misc{empty,\n  title = {},\n  note = ""\n}',
   semantic: '@article{invented,\n  author = {Imaginary Researcher},\n  title = {A Made-Up Paper in a Nonexistent Journal},\n  journal = {This Journal Does Not Exist},\n  year = 9999\n}'
 };
-document.querySelectorAll('[data-example]').forEach(button => button.onclick = () => { $('bibtex-input').value = examples[button.dataset.example]; $('validate').click(); });
+document.querySelectorAll('[data-example]').forEach(button => button.onclick = () => { $('bibtex-input').value = examples[button.dataset.example]; if (!recordedSite) $('validate').click(); });
 $('validate').onclick = async () => {
   try {
-    const response = await fetch('/api/validate', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({source: $('bibtex-input').value})});
+    const response = await apiFetch('/api/validate', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({source: $('bibtex-input').value})});
     const value = await response.json(); if (!response.ok) throw Error(value.error);
     $('validation-status').textContent = value.raw_valid ? 'Accepted by Lark' : 'Rejected by Lark';
     $('validation-status').className = value.raw_valid ? 'success-text' : 'failure-text';
@@ -98,9 +164,11 @@ $('validate').onclick = async () => {
 };
 async function pollRun() {
   try {
-    const response = await fetch('/api/job'); const job = await response.json();
+    const response = await apiFetch('/api/job'); const job = await response.json();
     $('live-log').textContent = job.log_tail || 'Loading the local model. This can take a few minutes…';
-    $('live-run').textContent = job.status === 'running' ? 'Qwen is running…' : 'Run Qwen again locally';
+    $('live-run').textContent = job.status === 'running' ? 'Running all 3 prompts…' : 'Run all 3 prompts locally';
+    $('run-status').textContent = job.status === 'running' ? 'Fresh generation in progress. Existing displayed results remain saved evidence until this run finishes.' :
+      job.status === 'complete' ? 'Fresh run completed. The table and outputs now show this run.' : 'Run ended with failures. Inspect the logs and any available outputs.';
     if (job.status === 'running') { setTimeout(pollRun, 1500); return; }
     $('live-run').disabled = false;
     if (job.report) loadReport(job.report, job.status === 'complete' ? 'Fresh live run completed' : 'Live run finished with failures');
@@ -109,13 +177,14 @@ async function pollRun() {
 }
 $('live-run').onclick = async () => {
   $('live-run').disabled = true;
-  try { const response = await fetch('/api/run', {method: 'POST'}); if (![202, 409].includes(response.status)) throw Error('Could not start the run.'); pollRun(); }
+  $('run-status').textContent = 'Starting the local three-prompt comparison…';
+  try { const response = await apiFetch('/api/run', {method: 'POST'}); if (![202, 409].includes(response.status)) throw Error('Could not start the run.'); pollRun(); }
   catch (error) { $('live-log').textContent = error.message; $('live-run').disabled = false; }
 };
 showComponent('syncode'); $('bibtex-input').value = examples.nested;
-fetch('/api/evidence').then(response => { if (!response.ok) throw Error('Could not load the saved evidence.'); return response.json(); }).then(value => loadReport(value, 'Recorded real experiment')).catch(error => { $('evidence-label').textContent = error.message; });
+apiFetch('/api/evidence').then(response => { if (!response.ok) throw Error('Could not load the saved evidence.'); return response.json(); }).then(value => loadReport(value, 'Recorded real experiment')).catch(error => { $('evidence-label').textContent = error.message; });
 
-fetch('/api/bounds').then(async response => {
+apiFetch('/api/bounds').then(async response => {
   const value = await response.json(); if (!response.ok) throw Error(value.error);
   const rows = value.after.cases;
   const matched = rows.filter(row => row.matched_expectation).length;
@@ -159,10 +228,10 @@ function renderSelectedCase() {
   $('case-original-expectation').textContent = 'Original fixture expectation: ' + (item.expected_accept ? 'Accept' : 'Reject');
   $('case-source-info').textContent = `${item.characters} characters; SHA-256 ${item.source_sha256}` + (item.source === null ? '. Preview only: the original-fixture action parses the full generated input.' : '');
   $('case-input').value = item.source === null ? item.preview : item.source;
-  $('case-input').readOnly = item.source === null;
-  $('run-edited-case').disabled = item.source === null;
+  $('case-input').readOnly = recordedSite || item.source === null;
+  $('run-edited-case').disabled = recordedSite || item.source === null;
   $('case-edited-expected').value = String(item.expected_accept);
-  $('case-run-status').textContent = 'Not run. The expectation above is not an execution result.';
+  $('case-run-status').textContent = recordedSite ? 'Select Show saved case result to inspect recorded evidence.' : 'Not run. The expectation above is not an execution result.';
   $('case-run-detail').textContent = '';
 }
 function filterCases() {
@@ -180,14 +249,14 @@ function showCaseResult(result, label) {
   $('case-run-detail').textContent = `Input characters: ${result.characters}\nInput SHA-256: ${result.source_sha256 || '(edited input)'}\nParse time: ${result.elapsed_ms === undefined ? 'not measured' : result.elapsed_ms + ' ms'}\n\n${result.tree || result.error || 'No tree/error preview returned. Inspect this fixture individually for a tree.'}`;
 }
 async function caseRequest(path, payload) {
-  const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
+  const response = await apiFetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload)});
   const result = await response.json(); if (!response.ok) throw Error(result.error); return result;
 }
 $('case-group').onchange = filterCases;
 $('case-select').onchange = renderSelectedCase;
 $('run-original-case').onclick = async () => {
   $('run-original-case').disabled = true;
-  try { showCaseResult(await caseRequest('/api/run-case', {case_id: selectedCase().case_id}), 'Original fixture run'); }
+  try { showCaseResult(await caseRequest('/api/run-case', {case_id: selectedCase().case_id}), recordedSite ? 'Recorded case result' : 'Original fixture run'); }
   catch (error) { $('case-run-status').textContent = error.message; }
   finally { $('run-original-case').disabled = false; }
 };
@@ -201,7 +270,7 @@ $('run-edited-case').onclick = async () => {
   } catch (error) { $('case-run-status').textContent = error.message; }
 };
 $('run-case-group').onclick = async () => {
-  $('run-case-group').disabled = true; $('case-group-status').textContent = 'Running actual parser checks…';
+  $('run-case-group').disabled = true; $('case-group-status').textContent = recordedSite ? 'Loading saved results…' : 'Running actual parser checks…';
   try {
     const batch = await caseRequest('/api/run-group', {group: $('case-group').value});
     $('case-group-results').replaceChildren();
@@ -212,11 +281,11 @@ $('run-case-group').onclick = async () => {
       inspect.onclick = () => { $('case-select').value = result.case_id; renderSelectedCase(); showCaseResult(result, 'Group-run result'); };
       td.append(inspect); row.append(td); $('case-group-results').append(row);
     }
-    $('case-group-status').textContent = `${batch.matched}/${batch.total} expectations matched in this fresh group run. These are parser checks, not model generations.`;
+    $('case-group-status').textContent = `${batch.matched}/${batch.total} expectations matched in ${recordedSite ? 'the recorded group results' : 'this fresh group run'}. These are parser checks, not model generations.`;
   } catch (error) { $('case-group-status').textContent = error.message; }
   finally { $('run-case-group').disabled = false; }
 };
-fetch('/api/cases').then(async response => {
+apiFetch('/api/cases').then(async response => {
   const value = await response.json(); if (!response.ok) throw Error(value.error); caseCatalog = value;
   const all = document.createElement('option'); all.value = '*'; all.textContent = 'All groups';
   $('case-group').replaceChildren(all, ...Object.keys(value.groups).map(group => {
@@ -228,3 +297,13 @@ fetch('/api/cases').then(async response => {
     cell(row, value.cases.filter(item => item.requirements.includes(id)).length); $('case-requirement-map').append(row);
   }
 }).catch(error => { $('case-catalog-status').textContent = error.message; });
+if (recordedSite) {
+  $('live-run').hidden = true;
+  $('run-status').textContent = 'Published evidence viewer. Fresh Qwen generation requires the local setup in Reproduce.';
+  $('validate').disabled = true;
+  $('validation-status').textContent = 'Live validation is available in the local Python demo.';
+  $('run-edited-case').hidden = true;
+  $('run-original-case').textContent = 'Show saved case result';
+  $('run-case-group').textContent = 'Show saved group results';
+  $('case-edited-expected').disabled = true;
+}

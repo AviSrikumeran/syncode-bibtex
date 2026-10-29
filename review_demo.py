@@ -214,6 +214,9 @@ class ReviewHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
+        if self.path == '/api/grammar':
+            return self.send_json(200, dict(source=(ROOT / 'bibtex.lark').read_text(encoding='utf-8'),
+                                            filename='bibtex.lark'))
         if self.path == '/api/cases':
             catalog = []
             for fixture in self.server.case_fixtures.values():

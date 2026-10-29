@@ -41,6 +41,13 @@ class ReviewerDemoTests(unittest.TestCase):
         self.assertTrue(body['raw_valid'])
         self.assertIn('braced', body['tree'])
 
+    def test_grammar_endpoint_returns_actual_file(self):
+        from bibtex_syncode import GRAMMAR_PATH
+        status, body = self.request('GET', '/api/grammar')
+        self.assertEqual(status, 200)
+        self.assertEqual(body['source'], GRAMMAR_PATH.read_text(encoding='utf-8'))
+        self.assertEqual(body['filename'], 'bibtex.lark')
+
     def test_validation_endpoint_rejects_incomplete_input(self):
         status, body = self.request('POST', '/api/validate', {'source': '@misc{k,title={x}'})
         self.assertEqual(status, 200)

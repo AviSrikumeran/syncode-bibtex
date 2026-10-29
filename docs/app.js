@@ -309,6 +309,7 @@ apiFetch('/api/cases').then(async response => {
   }
 }).catch(error => { $('case-catalog-status').textContent = error.message; });
 if (recordedSite) {
+  $('edited-case-controls').hidden = true;
   $('live-run').hidden = true;
   $('run-status').textContent = 'Published evidence viewer. Fresh Qwen generation requires the local setup in Reproduce.';
   $('validate').disabled = true;

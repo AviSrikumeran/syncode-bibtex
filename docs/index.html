@@ -3,16 +3,20 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>BibTeX evaluation console</title>
-  <link rel="stylesheet" href="./styles.css?v=0b8c5aef418c"><script src="./app.js?v=789c96bfe148" defer></script>
+  <link rel="stylesheet" href="./styles.css?v=0b8c5aef418c"><script src="./app.js?v=b5e347b3985a" defer></script>
 </head>
 <body>
 <header><h1>BibTeX evaluation console</h1><p>Avinash · Computer science junior, University of Illinois</p><p>Published evidence viewer. Results are recorded; fresh parsing and Qwen generation run in the local Python demo. See Reproduce.</p></header>
+<p><strong>Recording guide v3 · PUBLIC SAVED EVIDENCE — use the local Python demo for fresh execution.</strong></p>
 <main>
   <nav aria-label="Demonstration sections">
     <button class="active" data-tab="pipeline">1. Overview</button><button data-tab="grammar">2. Grammar rules</button><button data-tab="parser">3. Try a citation</button>
     <button data-tab="cases">4. Test cases</button><button data-tab="spectrum">5. Test spectrum</button><button data-tab="comparison">6. Three prompts</button><button data-tab="tokens">7. Token trace</button><button data-tab="reproduce">8. Reproduce</button>
   </nav>
   <section id="pipeline" class="panel">
+    <h2>Start here on a new machine</h2><p>Copy this block to enter the project folder and display the grammar. Keep that PowerShell window open for subsequent commands.</p><pre data-copy-commands><code>git clone --branch reviewer-demo https://github.com/AviSrikumeran/syncode-bibtex.git
+Set-Location .\syncode-bibtex
+Get-Content .\bibtex.lark</code></pre>
     <h2>The assignment</h2>
     <p>Implement a Lark LALR(1) grammar for BibTeX citations, including standard entry types, nested braces, special characters and LaTeX commands. Verify it with the supplied tests, then integrate it with SynCode and generate citations using at least three different prompts.</p>
     <p>The required deliverables are <code>bibtex.lark</code> and <code>bibtex_syncode.py</code>. This console, additional parser cases, boundary measurements and captured token traces support inspection of that implementation.</p>
@@ -93,7 +97,8 @@
     <div class="toolbar"><label>1. Choose group <select id="case-group"></select></label><label>2. Choose one case <select id="case-select"></select></label></div>
     <p id="case-reason"></p><p id="case-requirements"></p><p id="case-original-expectation"></p>
     <p id="case-source-info"></p><label for="case-input">Saved input (read-only)</label><textarea id="case-input" rows="8" spellcheck="false"></textarea>
-    <div class="toolbar"><button id="run-original-case">Show saved case result</button><button id="run-edited-case">Test current editor text</button><label>Expected for editor text <select id="case-edited-expected"><option value="true">Accept</option><option value="false">Reject</option></select></label></div>
+    <div class="toolbar"><button id="run-original-case">Show saved case result</button></div>
+    <details id="edited-case-controls"><summary>Optional: test your own edits</summary><p>Edit the input above, then state what you predict. This choice does not change the parser. If you choose rejection but the parser accepts the text, your prediction does not match the result.</p><div class="toolbar"><label>My prediction <select id="case-edited-expected"><option value="true">Parser should accept</option><option value="false">Parser should reject</option></select></label><button id="run-edited-case">Test my edited text</button></div></details>
     <p>This page displays stored inputs and results. To change an input and execute the parser, run the local demo.</p>
     <p id="case-run-status" role="status">No case run yet.</p><details><summary>Show case details</summary><pre id="case-run-detail">The parse-tree preview or actual parser error will appear here.</pre></details>
     <h3>Run a group</h3><button id="run-case-group">Show saved group results</button><p>This batch action uses the saved cases, not your editor changes. Selecting All groups displays the recorded results for the entire 224-case catalog: 7 supplied examples plus 217 additional observations.</p><p id="case-group-status" role="status"></p>
@@ -102,6 +107,8 @@
     <table><thead><tr><th>ID</th><th>Behavior checked</th><th>Tagged fixtures</th></tr></thead><tbody id="case-requirement-map"></tbody></table>
   </section>
   <section id="spectrum" class="panel" hidden>
+    <h2>Run the test spectrum in PowerShell</h2><pre data-copy-commands><code>.\.venv\Scripts\python.exe evaluate_bounds.py</code></pre>
+    <p>Run from the project folder. This performs 217 parser observations and prints the measured summary.</p>
     <h2>Beyond the supplied examples</h2>
     <p>The spectrum contains 217 selected parser observations. Explicit examples are combined with deterministic generators for nesting depths, entry counts, value lengths, feature combinations and incomplete prefixes. Each input has an expected acceptance or rejection. The cases are reproducible from <code>evaluate_bounds.py</code>; they are not all individually handwritten.</p>
     <p>Each case is parsed three times and its median time is recorded. Categories group the behavior being checked. Measured scale increases nested-group depth, number of entries or field-value length. The character column is the size of the full input. Passing all selected cases does not establish perfection or complete coverage.</p>
@@ -112,9 +119,7 @@
     <h3>Defect discovered and fixed</h3><p>Valid field text containing non-breaking and thin spaces was initially rejected. The preserved before-fix report records that failure. The grammar was corrected to distinguish structural ASCII whitespace from these literal characters, and regression coverage was added. This is a concrete failure-and-repair example.</p><p id="bounds-defect"></p>
     <details><summary>Inspect every case, expected outcome, observed outcome, and input preview</summary><table><thead><tr><th>Category / case</th><th>Expected</th><th>Observed</th><th>Matched</th><th>Median ms</th></tr></thead><tbody id="bounds-cases"></tbody></table></details>
     <p>Three repetitions per case by default. Timings describe this machine and run. The largest tested point is not a proven maximum. Some legitimate BibTeX features are not implemented by this grammar. Semantically questionable cases are intentionally accepted.</p>
-    <p>Run either command below; both perform the spectrum evaluation.</p>
-    <pre data-copy-commands><code>.\.venv\Scripts\python.exe evaluate_bounds.py
-.\.venv\Scripts\python.exe terminal_demo.py --action bounds</code></pre>
+    
   </section>
   <section id="reproduce" class="panel" hidden>
     <p>This section identifies the recorded model revision, source hashes, dependencies and commands so another reviewer can reproduce the experiment locally. AI assisted development and explanation; the saved reports and executable checks provide evidence that can be inspected independently.</p>

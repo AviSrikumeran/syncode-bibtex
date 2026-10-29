@@ -50,6 +50,11 @@ def build():
         (data / (name + '.json')).write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')
     html = (ROOT / 'reviewer/index.html').read_text(encoding='utf-8')
     html = html.replace('<html lang="en">', '<html lang="en" data-mode="recorded">')
+    html = html.replace('Recording guide v3 · LIVE LOCAL DEMO — use this page for your recording.',
+                        'Recording guide v3 · PUBLIC SAVED EVIDENCE — use the local Python demo for fresh execution.')
+    html = html.replace('Start here in PowerShell on this PC', 'Start here on a new machine')
+    html = html.replace('Set-Location "' + str(ROOT) + '"',
+                        'git clone --branch reviewer-demo https://github.com/AviSrikumeran/syncode-bibtex.git\nSet-Location .\\syncode-bibtex')
     style_version = hashlib.sha256((ROOT / 'reviewer/styles.css').read_bytes()).hexdigest()[:12]
     script_version = hashlib.sha256((ROOT / 'reviewer/app.js').read_bytes()).hexdigest()[:12]
     html = html.replace('href="/styles.css"', f'href="./styles.css?v={style_version}"').replace('src="/app.js"', f'src="./app.js?v={script_version}"')

@@ -33,12 +33,13 @@
     <p><b>A citation can follow the grammar and still contain incorrect information.</b> Parsing does not verify publications or guarantee the request was followed.</p>
   </section>
   <section id="grammar" class="panel" hidden>
+    <h2>Show the grammar in PowerShell</h2><pre data-copy-commands><code>Get-Content .\bibtex.lark</code></pre>
     <h2>The actual grammar rules</h2>
     <p>This is <code>bibtex.lark</code>, exported from the project. It is the file used by the parser and generation script.</p>
     <p><b>Follow the structure:</b> a document contains entries; entries contain a key and fields; fields assign values. The <code>braced</code> rule refers to itself to handle nested groups.</p>
     <pre><code id="grammar-source">Loading bibtex.lark…</code></pre>
     <button id="copy-grammar" disabled>Copy grammar</button><span id="grammar-copy-status" role="status"></span>
-    <details><summary>Show the grammar in PowerShell instead</summary><pre data-copy-commands><code>Get-Content .\bibtex.lark</code></pre></details>
+    
   </section>
   <section id="comparison" class="panel" hidden>
     <h2>Generate citations from three different prompts</h2>

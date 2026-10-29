@@ -53,6 +53,9 @@ def build():
     html = html.replace('Recording guide v3 · LIVE LOCAL DEMO — use this page for your recording.',
                         'Recording guide v3 · PUBLIC SAVED EVIDENCE — use the local Python demo for fresh execution.')
     html = html.replace('Start here in PowerShell on this PC', 'Start here on a new machine')
+    html = html.replace('cd "' + str(ROOT) + '"', 'cd .\\syncode-bibtex')
+    html = html.replace('Copy this command into PowerShell. Keep that window open for the remaining commands.',
+                        'From the parent folder of your existing checkout, copy this command into PowerShell. First-time installation is in Reproduce.')
     html = html.replace('Set-Location "' + str(ROOT) + '"',
                         'git clone --branch reviewer-demo https://github.com/AviSrikumeran/syncode-bibtex.git\nSet-Location .\\syncode-bibtex')
     style_version = hashlib.sha256((ROOT / 'reviewer/styles.css').read_bytes()).hexdigest()[:12]

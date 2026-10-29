@@ -1,0 +1,118 @@
+PASS: article (accepted)
+PASS: mixed fields (accepted)
+PASS: multiple entries (accepted)
+PASS: 40 nested groups (accepted)
+PASS: malformed input (rejected)
+Building SynCode token masks...
+[2026-10-25 17:35:18,473-syncode.mask_store.mask_store] - Using cache: True and fsm path C:/Users/Avibo/.codex/.chatgpt-projects/g-p-6add5d6e1748819189d742fbb3cad530/bibtex-assignment/.cache/syncode/mask_stores/Qwen2TokenizerFast/grammar_mask_3638868905_151643.pkl exist: False
+[2026-10-25 17:35:18,473-syncode.mask_store.mask_store] - Creating mask store for Qwen2TokenizerFast and custom, may take more than 10 minutes. Caching at C:\Users\Avibo\.codex\.chatgpt-projects\g-p-6add5d6e1748819189d742fbb3cad530\bibtex-assignment\.cache\syncode\mask_stores\Qwen2TokenizerFast\grammar_mask_3638868905_151643.pkl.
+[2026-10-25 17:35:19,242-syncode.mask_store.fsm_set] - 14 FSMs with 33 states initialized in 0.00 seconds
+[2026-10-25 17:35:19,243-syncode.mask_store.mask_store] - Ignore whitespace is False
+[2026-10-25 17:35:19,243-syncode.mask_store.mask_store] - Number of 2 length terminal sequences reduced from 196 to 196
+
+  0%|          | 0/33 [00:00<?, ?it/s]
+  3%|3         | 1/33 [00:00<00:11,  2.76it/s]
+  6%|6         | 2/33 [00:03<00:55,  1.78s/it]
+  9%|9         | 3/33 [00:04<00:43,  1.45s/it]
+ 12%|#2        | 4/33 [00:04<00:27,  1.04it/s]
+ 15%|#5        | 5/33 [00:05<00:33,  1.18s/it]
+ 18%|#8        | 6/33 [00:07<00:31,  1.17s/it]
+ 21%|##1       | 7/33 [00:07<00:24,  1.05it/s]
+ 24%|##4       | 8/33 [00:08<00:24,  1.00it/s]
+ 27%|##7       | 9/33 [00:09<00:24,  1.03s/it]
+ 30%|###       | 10/33 [00:10<00:17,  1.28it/s]
+ 33%|###3      | 11/33 [00:12<00:29,  1.33s/it]
+ 36%|###6      | 12/33 [00:13<00:26,  1.25s/it]
+ 39%|###9      | 13/33 [00:14<00:21,  1.06s/it]
+ 42%|####2     | 14/33 [00:15<00:20,  1.10s/it]
+ 45%|####5     | 15/33 [00:16<00:20,  1.14s/it]
+ 48%|####8     | 16/33 [00:16<00:14,  1.16it/s]
+ 52%|#####1    | 17/33 [00:18<00:14,  1.09it/s]
+ 55%|#####4    | 18/33 [00:18<00:10,  1.41it/s]
+ 58%|#####7    | 19/33 [00:19<00:11,  1.22it/s]
+ 61%|######    | 20/33 [00:19<00:08,  1.57it/s]
+ 64%|######3   | 21/33 [00:20<00:09,  1.30it/s]
+ 67%|######6   | 22/33 [00:20<00:06,  1.64it/s]
+ 70%|######9   | 23/33 [00:21<00:07,  1.34it/s]
+ 73%|#######2  | 24/33 [00:22<00:05,  1.71it/s]
+ 76%|#######5  | 25/33 [00:23<00:05,  1.37it/s]
+ 79%|#######8  | 26/33 [00:23<00:04,  1.75it/s]
+ 82%|########1 | 27/33 [00:24<00:04,  1.38it/s]
+ 85%|########4 | 28/33 [00:24<00:02,  1.75it/s]
+ 88%|########7 | 29/33 [00:25<00:02,  1.39it/s]
+ 91%|######### | 30/33 [00:25<00:01,  1.77it/s]
+ 94%|#########3| 31/33 [00:27<00:01,  1.40it/s]
+ 97%|#########6| 32/33 [00:27<00:00,  1.77it/s]
+100%|##########| 33/33 [00:28<00:00,  1.37it/s]
+100%|##########| 33/33 [00:28<00:00,  1.16it/s]
+[2026-10-25 17:35:48,093-syncode.mask_store.mask_store] - Time taken to create mask store: 29.61 seconds
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+unconstrained: Generate one BibTeX article entry for a paper about LLM security.
+```bibtex
+@article{liu2023llm,
+  title={LLM Security: A Comprehensive Analysis},
+  author={Liu, Yiming and Wang, Zhihui and Zhang, Xiangyu and Li, Shuhua and Chen, Xiaohong and Sun, Hongbin and Liu, Jie and Wu, Yanping and Zhou, Heng},
+  journal={Journal of Computer Security},
+  volume={31},
+  number={4},
+  pages={579--608},
+  year={2023}
+}
+```
+Lark validation: FAIL
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+constrained: Generate one BibTeX article entry for a paper about LLM security.
+@article{LSTMSecurity,
+  title={LSTM Security: A Review},
+  author={Zhang, Yuhui and Wang, Zhihong and Li, Xiaohua and Zhang, Xingyi and Liu, Sheng},
+  journal={Journal of Computer Science and Technology},
+  volume={36},
+  number={1},
+  pages={20--45},
+  year={2021}
+}
+Lark validation: PASS
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+unconstrained: Generate one BibTeX inproceedings entry for a conference paper by Smith and Johnson.
+```bibtex
+@inproceedings{smith2019,
+  title={A Study on the Impact of Social Media on Online Learning},
+  author={Smith, John and Johnson, Sarah},
+  booktitle={Proceedings of the Conference on Information Systems (CIS)},
+  year={2019}
+}
+```
+Lark validation: FAIL
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+constrained: Generate one BibTeX inproceedings entry for a conference paper by Smith and Johnson.
+@inproceedings{smith2019,
+  title={A Study on the Impact of Social Media on Online Learning},
+  author={Smith, John and Johnson, Sarah},
+  booktitle={Proceedings of the Conference on Information Systems (CIS)},
+  year={2019}
+}
+Lark validation: PASS
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+unconstrained: Generate one BibTeX book entry for Reinforcement Learning by Sutton and Barto.
+```bibtex
+@book{SuttonBarto,
+  title={Reinforcement learning: An introduction},
+  author={Sutton, Richard S. and Barto, Andrew G.},
+  publisher={MIT Press}
+}
+```
+Lark validation: FAIL
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+
+constrained: Generate one BibTeX book entry for Reinforcement Learning by Sutton and Barto.
+@book{barto2018reinforcement,
+  title={Reinforcement learning: An introduction},
+  author={Barto, Andrew G and Sutton, Richard S},
+  year={2018}
+}
+Lark validation: PASS

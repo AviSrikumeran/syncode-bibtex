@@ -13,6 +13,7 @@ def main():
         ('Additional valid inputs', 'tests.test_edge_cases.ValidInputTests'),
         ('Invalid inputs rejected', 'tests.test_edge_cases.InvalidInputTests'),
         ('SynCode parser compatibility', 'tests.test_syncode.SynCodeParserTests'),
+        ('Reviewer demonstration', 'tests.test_review_demo.ReviewerDemoTests'),
     )
     success = True
     for label, name in groups:

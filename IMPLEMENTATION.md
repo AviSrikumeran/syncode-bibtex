@@ -1,5 +1,9 @@
 # BibTeX assignment: implementation and demonstration
 
+For the expanded reviewer interface, fair comparison analysis, and current
+87-test suite, see [REVIEWER.md](REVIEWER.md). The historical runs below are
+preserved as evidence of the original implementation and its limitations.
+
 The working copy is based on upstream commit
 `a91952e657ff94d296fdd196f32ce247731cb12a`. The original assignment text
 is retained below the implementation instructions in README.md.

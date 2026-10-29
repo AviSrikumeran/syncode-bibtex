@@ -1,0 +1,46 @@
+body {
+  font-family: system-ui, sans-serif;
+  margin: 20px;
+  color: #111;
+  background: #fff;
+  line-height: 1.5;
+}
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1rem; }
+nav, .toolbar, .pipeline { margin: 12px 0; }
+button, select, input, textarea { font: inherit; }
+button { margin: 3px; padding: 3px 8px; }
+button.active, button.selected { font-weight: bold; outline: 1px solid #555; }
+button:disabled { opacity: .6; }
+label { display: inline-block; margin-right: 12px; }
+select { max-width: 100%; }
+section.panel { border-top: 1px solid #aaa; padding: 10px 0; }
+pre {
+  font-size: .9rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #f7f7f7;
+}
+code { font-family: Consolas, monospace; }
+textarea { width: 100%; box-sizing: border-box; font-family: Consolas, monospace; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th, td { border: 1px solid #bbb; padding: 5px 8px; text-align: left; vertical-align: top; }
+th { background: #eee; }
+td { overflow-wrap: anywhere; }
+.outputs, .token-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.output-heading h3 { display: inline; margin-right: 12px; }
+.badge { font-weight: bold; }
+.boundary { border-top: 1px solid #aaa; margin-top: 12px; padding-top: 8px; }
+dl { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 6px; }
+dd { margin: 0; overflow-wrap: anywhere; font-family: Consolas, monospace; }
+summary { cursor: pointer; }
+footer { border-top: 1px solid #aaa; margin-top: 20px; padding-top: 8px; }
+[hidden] { display: none !important; }
+@media (max-width: 760px) {
+  body { margin: 10px; }
+  .outputs, .token-layout, dl { display: block; }
+  dd { margin-bottom: 10px; }
+}

@@ -1,3 +1,7 @@
 .venv/
 __pycache__/
 .cache/
+results/screenshots/
+results/reviewer-live-*
+results/terminal-run-*
+results/terminal-*.log

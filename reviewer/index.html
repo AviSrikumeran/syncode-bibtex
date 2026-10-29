@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>BibTeX evaluation console</title>
+  <link rel="stylesheet" href="/styles.css"><script src="/app.js" defer></script>
+</head>
+<body>
+<header><h1>BibTeX evaluation console</h1><p>Avinash · Computer science junior, University of Illinois</p><p>Local execution. Recorded evidence is labeled. Publication facts are not verified.</p></header>
+<main>
+  <nav aria-label="Demonstration sections">
+    <button class="active" data-tab="pipeline">1. Overview</button><button data-tab="grammar">2. Grammar rules</button><button data-tab="parser">3. Try a citation</button>
+    <button data-tab="cases">4. Test cases</button><button data-tab="spectrum">5. Test spectrum</button><button data-tab="comparison">6. Three prompts</button><button data-tab="tokens">7. Token trace</button><button data-tab="reproduce">8. Reproduce</button>
+  </nav>
+  <section id="pipeline" class="panel">
+    <h2>The assignment</h2>
+    <p>Implement a Lark LALR(1) grammar for BibTeX citations, including standard entry types, nested braces, special characters and LaTeX commands. Verify it with the supplied tests, then integrate it with SynCode and generate citations using at least three different prompts.</p>
+    <p>The required deliverables are <code>bibtex.lark</code> and <code>bibtex_syncode.py</code>. This console, additional parser cases, boundary measurements and captured token traces support inspection of that implementation.</p>
+    <p><b>Local model:</b> Qwen2.5-0.5B-Instruct, running on the CPU from downloaded model files. BibTeX, Lark, SynCode and Qwen are existing tools; this project supplies the citation grammar and integration/evaluation code.</p>
+    <p><b>How it works:</b> The Python script loads the same grammar into Lark and SynCode. Qwen scores possible next tokens, SynCode filters the choices, and Lark checks the resulting text. The Qwen and SynCode steps repeat during generation.</p>
+    <details><summary>Optional component details</summary>
+    <div class="pipeline" aria-label="Generation pipeline">
+      <button data-component="tokenizer">Tokenizer</button> →
+      <button data-component="qwen">Qwen</button> →
+      <button data-component="syncode">SynCode + grammar</button> →
+      <button data-component="lark">Lark</button>
+    </div>
+    <p class="loop-note">Qwen → SynCode repeats for each generated token. Lark independently checks the completed response.</p>
+    <article class="explanation"><div><p class="eyebrow" id="component-label"></p><h3 id="component-title"></h3><p id="component-description"></p><p class="muted" id="component-limit"></p></div><pre><code id="component-example"></code></pre></article>
+    </details>
+    <p><b>A citation can follow the grammar and still contain incorrect information.</b> Parsing does not verify publications or guarantee the request was followed.</p>
+  </section>
+  <section id="grammar" class="panel" hidden>
+    <h2>The actual grammar rules</h2>
+    <p>This is <code>bibtex.lark</code>, read directly from the local project. It is the file used by the parser and generation script.</p>
+    <p><b>Follow the structure:</b> a document contains entries; entries contain a key and fields; fields assign values. The <code>braced</code> rule refers to itself to handle nested groups.</p>
+    <pre><code id="grammar-source">Loading bibtex.lark…</code></pre>
+    <button id="copy-grammar" disabled>Copy grammar</button><span id="grammar-copy-status" role="status"></span>
+    <details><summary>Show the grammar in PowerShell instead</summary><pre data-copy-commands><code>Get-Content .\bibtex.lark</code></pre></details>
+  </section>
+  <section id="comparison" class="panel" hidden>
+    <h2>Generate citations from three different prompts</h2>
+    <p><b>One run compares all three prompts twice:</b> Qwen alone, then the same Qwen with SynCode. That makes six generations. No manual typing is required.</p>
+    <p>First inspect the requests below. Click <b>Run all 3 prompts locally</b> for fresh inference, then use <b>Show outputs</b> for each request. Initial results are saved evidence, not a new run. Generation can take several minutes.</p>
+    <table><thead><tr><th>Request</th><th>Qwen alone</th><th>With SynCode</th><th>Inspect</th></tr></thead><tbody id="prompt-overview"></tbody></table>
+    <details><summary>Run the same three-prompt comparison from PowerShell</summary><p>Run from the repository folder. Uses downloaded model files and saves new evidence.</p><pre data-copy-commands><code>$env:HF_HUB_OFFLINE = '1'
+.\.venv\Scripts\python.exe bibtex_syncode.py --compare --trace-steps 8 --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output results/video-comparison.json</code></pre></details>
+    <div class="section-heading"><h2>Constrained and unconstrained generation</h2><p>Same model and prompt. Raw outputs independently revalidated by Lark.</p></div>
+    <div class="toolbar"><button id="live-run" class="primary">Run all 3 prompts locally</button><label>View results for <select id="prompt-select" aria-label="Choose a comparison prompt"></select></label></div>
+    <p id="run-status" role="status">No fresh run started in this session.</p>
+    <p id="evidence-label" class="muted" aria-live="polite"></p><p id="selected-prompt" class="prompt"></p>
+    <div class="outputs"><article><div class="output-heading"><h3>Qwen alone</h3><span id="unconstrained-badge" class="badge"></span></div><pre><code id="unconstrained-output"></code></pre><p id="unconstrained-assessment"></p></article>
+    <article><div class="output-heading"><h3>Qwen + SynCode</h3><span id="constrained-badge" class="badge"></span></div><pre><code id="constrained-output"></code></pre><p id="constrained-assessment"></p></article></div>
+    <div class="boundary"><strong>Observed results</strong><p id="comparison-summary"></p><p>Compare the raw parser result with the result after removing only an outer Markdown fence. Citation facts are not checked by this parser.</p></div>
+    <details><summary>Live run progress and logs</summary><pre id="live-log" aria-live="polite">No live run started in this browser session.</pre></details>
+  </section>
+  <section id="tokens" class="panel" hidden>
+    <p><b>Walkthrough:</b> Start at step one. Compare a Markdown-fence candidate with <code>@</code>, inspect which choices the mask permits, then move to a later step. These are captured decisions from the selected generation, not a live stream.</p>
+    <div class="section-heading"><h2>Recorded next-token decisions</h2><p>Actual scores and mask decisions. This does not expose private model reasoning.</p></div>
+    <div class="toolbar"><label>Prompt <select id="trace-prompt"></select></label><label>Step <input id="trace-step" type="range" min="1" max="8" value="1"><output id="step-label">1</output></label></div>
+    <p class="small-label">GENERATED PREFIX BEFORE THIS DECISION</p><pre><code id="trace-prefix"></code></pre>
+    <div class="token-layout"><article><h3>Qwen's top five candidates</h3><table><thead><tr><th>Token text</th><th>Score</th><th>SynCode</th></tr></thead><tbody id="token-candidates"></tbody></table></article>
+    <article><h3>After applying the mask</h3><table><thead><tr><th>Token text</th><th>Score</th></tr></thead><tbody id="token-allowed"></tbody></table><p class="selection">Chosen token <code id="selected-token"></code></p></article></div>
+    <p class="muted">Scores are processed logits at the SynCode boundary, after built-in Hugging Face processors such as repetition penalties. They are not probabilities. Greedy decoding chooses the highest remaining score. “Allowed” means permitted by SynCode's mask at this step; final validation still matters in grammar_mask mode.</p>
+  </section>
+  <section id="parser" class="panel" hidden>
+    <h2>Try a citation</h2>
+    <pre><code id="walkthrough-citation">@book{rivera2025,
+  author = {Alex Rivera},
+  title = {Understanding {AI}},
+  year = 2025
+}</code></pre>
+    <div class="toolbar"><button id="copy-citation">Copy citation</button><button id="use-citation">Load into validator</button><span id="copy-citation-status" role="status"></span></div>
+    <p><code>book</code> is the entry type; <code>rivera2025</code> is its citation key. Fields use <code>name = value</code> and commas separate them. The title contains an inner braced group around AI, which can protect its capitalization in BibTeX. This parser recognizes the structure; it does not typeset the bibliography.</p>
+    <pre><code>braced: "{" (text | "\&quot;" | braced)* "}"</code></pre>
+    <p>The braced rule refers to itself, allowing nested groups. Paste the example below and predict acceptance. Remove the entry's final closing brace and predict rejection. Changing the year to another number still passes syntax validation.</p>
+    <div class="section-heading"><h2>Validate BibTeX input</h2><p>This editor calls the local Lark parser. Maximum request: 20,000 characters.</p></div>
+    <div class="toolbar"><button data-example="nested">Nested braces</button><button data-example="broken">Missing closing brace</button><button data-example="empty">Empty value</button><button data-example="semantic">Fake publication, valid syntax</button></div>
+    <label class="small-label" for="bibtex-input">BIBTEX INPUT</label><textarea id="bibtex-input" rows="8" spellcheck="false"></textarea>
+    <div class="toolbar"><button id="validate" class="primary">Validate with Lark</button><span id="validation-status" role="status"></span></div>
+    <details id="validation-details"><summary>Show parse tree or error details</summary><p>The parse tree shows the structure Lark recognized. Rejected input has a parser error instead.</p><pre><code id="validation-detail">Choose an example or edit the text, then validate.</code></pre></details>
+  </section>
+  <section id="cases" class="panel" hidden>
+    <h2>First: the seven supplied tests</h2>
+    <p>The initial selection contains the seven original assignment examples. Choose <b>Run selected group</b> to execute their inputs against the local parser. For the actual supplied Python unit tests, run this command in the repository terminal:</p>
+    <pre data-copy-commands><code>.\.venv\Scripts\python.exe -m unittest -v test</code></pre>
+    <p><b>Then explore:</b> choose another group, inspect its expected acceptance or rejection, and run one fixture. An expected rejection is a successful check when the parser rejects it. Browser fixture runs and Python unit-test execution are distinct checks.</p>
+    <h2>Run and inspect individual test cases</h2>
+    <p>Each fixture has an input, an expectation, a reason, and requirement tags. Run it to obtain an actual parser result. These examples provide requirement evidence; they do not prove exhaustive conformance.</p>
+    <p>Catalog: the 7 original assignment examples plus the 217 selected boundary observations. These overlap with the regression suite. HTTP service tests and model-generation trials are separate evaluations.</p>
+    <p id="case-catalog-status" role="status">Loading the fixture catalog.</p>
+    <p><b>Group</b> selects a family of checks and filters the case list. <b>Case</b> selects one input within that family. Selecting either does not execute a test. Run one saved case, test your edited text, or run every saved case in the selected group.</p>
+    <div class="toolbar"><label>1. Choose group <select id="case-group"></select></label><label>2. Choose one case <select id="case-select"></select></label></div>
+    <p id="case-reason"></p><p id="case-requirements"></p><p id="case-original-expectation"></p>
+    <p id="case-source-info"></p><label for="case-input">Input (editable when at most 20,000 characters)</label><textarea id="case-input" rows="8" spellcheck="false"></textarea>
+    <div class="toolbar"><button id="run-original-case">Run saved case</button><button id="run-edited-case">Test current editor text</button><label>Expected for editor text <select id="case-edited-expected"><option value="true">Accept</option><option value="false">Reject</option></select></label></div>
+    <p>Change the edited-input expectation if your change alters the hypothesis. Original-fixture runs always use the stored full input and original expectation.</p>
+    <p id="case-run-status" role="status">No case run yet.</p><details><summary>Show case details</summary><pre id="case-run-detail">The parse-tree preview or actual parser error will appear here.</pre></details>
+    <h3>Run a group</h3><button id="run-case-group">Run all saved cases in selected group</button><p>This batch action uses the saved cases, not your editor changes. Selecting All groups runs the entire 224-case catalog: 7 supplied examples plus 217 additional observations.</p><p id="case-group-status" role="status"></p>
+    <table><thead><tr><th>Case</th><th>Expected</th><th>Observed</th><th>Matched expectation</th><th>Parse ms</th><th>Inspect</th></tr></thead><tbody id="case-group-results"></tbody></table>
+    <h3>Requirement-to-fixture map</h3><p>Counts are case tags, not a percentage of the full BibTeX language or a model reliability score.</p>
+    <table><thead><tr><th>ID</th><th>Behavior checked</th><th>Tagged fixtures</th></tr></thead><tbody id="case-requirement-map"></tbody></table>
+  </section>
+  <section id="spectrum" class="panel" hidden>
+    <h2>Beyond the supplied examples</h2>
+    <p>The spectrum contains 217 selected parser observations. Explicit examples are combined with deterministic generators for nesting depths, entry counts, value lengths, feature combinations and incomplete prefixes. Each input has an expected acceptance or rejection. The cases are reproducible from <code>evaluate_bounds.py</code>; they are not all individually handwritten.</p>
+    <p>Each case is parsed three times and its median time is recorded. Categories group the behavior being checked. Measured scale increases nested-group depth, number of entries or field-value length. The character column is the size of the full input. Passing all selected cases does not establish perfection or complete coverage.</p>
+    <h2>Measured test spectrum</h2><p id="bounds-status" role="status">Loading measured results.</p>
+    <p>These parser observations include existing regression cases. They are separate from the model-generation experiment and are not independent model trials.</p>
+    <h3>Coverage by category</h3><table><thead><tr><th>Category</th><th>Expectations met</th><th>Median case time (ms)</th></tr></thead><tbody id="bounds-groups"></tbody></table>
+    <h3>Measured scale</h3><table><thead><tr><th>Case</th><th>Characters</th><th>Accepted</th><th>Median ms</th></tr></thead><tbody id="bounds-scale"></tbody></table>
+    <h3>Defect discovered and fixed</h3><p>Valid field text containing non-breaking and thin spaces was initially rejected. The preserved before-fix report records that failure. The grammar was corrected to distinguish structural ASCII whitespace from these literal characters, and regression coverage was added. This is a concrete failure-and-repair example.</p><p id="bounds-defect"></p>
+    <details><summary>Inspect every case, expected outcome, observed outcome, and input preview</summary><table><thead><tr><th>Category / case</th><th>Expected</th><th>Observed</th><th>Matched</th><th>Median ms</th></tr></thead><tbody id="bounds-cases"></tbody></table></details>
+    <p>Three repetitions per case by default. Timings describe this machine and run. The largest tested point is not a proven maximum. Some legitimate BibTeX features are not implemented by this grammar. Semantically questionable cases are intentionally accepted.</p>
+    <p>Run either command below; both perform the spectrum evaluation.</p>
+    <pre data-copy-commands><code>.\.venv\Scripts\python.exe evaluate_bounds.py
+.\.venv\Scripts\python.exe terminal_demo.py --action bounds</code></pre>
+  </section>
+  <section id="reproduce" class="panel" hidden>
+    <p>This section identifies the recorded model revision, source hashes, dependencies and commands so another reviewer can reproduce the experiment locally. AI assisted development and explanation; the saved reports and executable checks provide evidence that can be inspected independently.</p>
+    <div class="section-heading"><h2>Reproduction and provenance</h2><p>Inspect the recorded configuration and rerun it independently.</p></div>
+    <dl id="provenance"></dl>
+    <h3>Reproduce the recorded experiment</h3><p>Fresh-machine setup commands follow. On this prepared machine, use your existing repository and environment.</p><pre data-copy-commands><code>git clone --branch reviewer-demo https://github.com/AviSrikumeran/syncode-bibtex.git
+cd syncode-bibtex
+py -3.12 -m venv .venv
+.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
+.venv\Scripts\python.exe run_tests.py
+.venv\Scripts\python.exe evaluate_bounds.py
+.venv\Scripts\python.exe terminal_demo.py --offline
+.venv\Scripts\python.exe bibtex_syncode.py --compare --trace-steps 8 --revision 7ae557604adf67be50417f59c2c2f167def9a775 --output results/reproduction.json
+.venv\Scripts\python.exe review_demo.py</code></pre>
+    <p>Windows / Python 3.12 is the verified environment. On macOS/Linux, use <code>python3.12</code> and <code>.venv/bin/python</code>; those platforms have not been verified here. The model downloads about 1 GB the first time. Windows may require Microsoft's Visual C++ x64 runtime.</p>
+    <p class="sources">Primary references: <a href="https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct" target="_blank" rel="noreferrer">Qwen model card</a> · <a href="https://github.com/structuredllm/syncode" target="_blank" rel="noreferrer">SynCode</a> · <a href="https://lark-parser.readthedocs.io/en/stable/grammar.html" target="_blank" rel="noreferrer">Lark grammar reference</a></p>
+  </section>
+</main>
+</body></html>

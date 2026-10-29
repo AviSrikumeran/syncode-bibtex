@@ -50,7 +50,9 @@ def build():
         (data / (name + '.json')).write_text(json.dumps(payload, ensure_ascii=False), encoding='utf-8')
     html = (ROOT / 'reviewer/index.html').read_text(encoding='utf-8')
     html = html.replace('<html lang="en">', '<html lang="en" data-mode="recorded">')
-    html = html.replace('href="/styles.css"', 'href="./styles.css"').replace('src="/app.js"', 'src="./app.js"')
+    style_version = hashlib.sha256((ROOT / 'reviewer/styles.css').read_bytes()).hexdigest()[:12]
+    script_version = hashlib.sha256((ROOT / 'reviewer/app.js').read_bytes()).hexdigest()[:12]
+    html = html.replace('href="/styles.css"', f'href="./styles.css?v={style_version}"').replace('src="/app.js"', f'src="./app.js?v={script_version}"')
     html = html.replace('Local execution. Recorded evidence is labeled. Publication facts are not verified.',
                         'Published evidence viewer. Results are recorded; fresh parsing and Qwen generation run in the local Python demo. See Reproduce.')
     html = html.replace('read directly from the local project', 'exported from the project')

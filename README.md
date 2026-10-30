@@ -2,6 +2,8 @@
 
 My solution to the [UIUC ARC BibTeX assignment](https://github.com/uiuc-arc/syncode-bibtex): a Lark LALR grammar, a script that applies it during language-model generation with SynCode, and executable tests. The implementation covers the three requested tasks: grammar construction, verification with the supplied tests, and citation generation from at least three different prompts.
 
+**[Watch the video walkthrough](https://www.youtube.com/watch?v=XM3bQ5CS43I&feature=youtu.be)**
+
 **[Open the project website](https://avisrikumeran.github.io/syncode-bibtex/)** — inspect the grammar, recorded test results, three-prompt comparison, and captured token choices without installing anything.
 
 The public website displays **recorded evaluation evidence** and lets you edit citations and validate them with **real Lark running in the browser** through Pyodide. The first validation downloads the browser runtime and Lark 1.2.2. The local Python console additionally executes test groups and runs fresh Qwen inference. GitHub Pages does not run Qwen or the Python server.
